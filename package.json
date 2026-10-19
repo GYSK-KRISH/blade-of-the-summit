@@ -1,0 +1,21 @@
+{
+  "name" : "blade-of-the-summit",
+  "version" : "1.0.0",
+  "description" : "A text-based adventure game where you play as a hero on a quest to retrieve a legendary sword from the summit of a treacherous mountain.",
+  "private": true,
+  "type": "module",
+  "main": "index.js",
+  "scripts" : {
+    "dev" : "vite",
+    "build" : "tsc && vite build",
+    "preview" : "vite preview"
+  },
+  "dependencies" : {
+    "phaser": "^3.80.1"
+  },
+  "devDependencies" : {
+    "@types/node": "^20.4.2",
+    "typescript": "^5.2.2",
+    "vite": "^5.3.1"
+  } 
+}
