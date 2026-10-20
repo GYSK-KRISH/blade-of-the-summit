@@ -1,5 +1,5 @@
- **Built for Terra Hack Cloud — 12 Week Challenge**  
- Made by **GYSK-KRISH**
+# **Built for Terra Hack Club — 12 Week Challenge**  
+>Made by **GYSK-KRISH**
 **Current Day: 2 / 84**
 
 # ⚔️ Blade of the Summit
@@ -19,7 +19,7 @@ Made by **GYSK-KRISH**
 Day 2 is live. The empty training square is gone.  
 We now have a real snowy valley with atmosphere, props, and a proper tilemap.
 
-![alt text](image.png)
+![day wise test r](<day wise test result/DAY2.png>)
 
 
 
@@ -32,8 +32,8 @@ We now have a real snowy valley with atmosphere, props, and a proper tilemap.
 ---
 
 ### Week 1 — Foundations
-- **Day 1** — Scaffolding, player movement, basic attack, dummy
-- **Day 2** — Full snowy valley, atmosphere, props, real tilemap
+- **Day 1** — Scaffolding, player movement, basic attack, dummy ✅
+- **Day 2** — Full snowy valley, atmosphere, props, real tilemap✅
 - **Day 3** — 
 - **Day 4** — 
 - **Day 5** — 
