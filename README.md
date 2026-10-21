@@ -18,7 +18,9 @@ Made by **GYSK-KRISH**
 
 Day 3 is live. 
 
-![alt text](image.png)
+
+![alt text](<day wise test result/Day3.png>)
+
 
 
 
