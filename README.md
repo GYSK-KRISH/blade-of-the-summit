@@ -1,6 +1,6 @@
 # **Built for Terra Hack Club — 12 Week Challenge**  
 >Made by **GYSK-KRISH**
-**Current Day: 2 / 84**
+**Current Day: 3 / 84**
 
 # ⚔️ Blade of the Summit
 
@@ -14,13 +14,11 @@ Made by **GYSK-KRISH**
 
 ---
 
-## 🏔️ Day 2 — Snow Valley Domain
+## 🏔️ Day 3 — 126x126 snowy village map
 
-Day 2 is live. The empty training square is gone.  
-We now have a real snowy valley with atmosphere, props, and a proper tilemap.
+Day 3 is live. 
 
-![day wise test r](<day wise test result/DAY2.png>)
-
+![alt text](image.png)
 
 
 
@@ -34,7 +32,7 @@ We now have a real snowy valley with atmosphere, props, and a proper tilemap.
 ### Week 1 — Foundations
 - **Day 1** — Scaffolding, player movement, basic attack, dummy ✅
 - **Day 2** — Full snowy valley, atmosphere, props, real tilemap✅
-- **Day 3** — 
+- **Day 3** — adding level 0 , mainmenu , full scren ,update Boosscenes  built 126x126 snowy village map ✅
 - **Day 4** — 
 - **Day 5** — 
 - **Day 6** — 
@@ -163,5 +161,5 @@ We now have a real snowy valley with atmosphere, props, and a proper tilemap.
 
 ---
 
-**Current Status:** Day 2 complete  
-**Next Up:** Day 3
+**Current Status:** Day 3 complete  
+**Next Up:** Day 4
