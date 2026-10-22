@@ -3,19 +3,11 @@ import Phaser from 'phaser';
 /* ----------------------------------------------------------------
  *  BOOT SCENE  — DOMAIN EXPANSION: PROCEDURAL TEXTURE FACTORY
  *
- * SAME ENERGY, NEW LAYER. we're still drawing every tile and prop
+ * AA SAME ENERGY, NEW LAYER. we're still drawing every tile and prop
  * on a live canvas like gojo opening his eyes for the first time.
  * but NOW we also pull in the REAL ninja boys from the asset pack
  * because bestie let's be real — tanjiro procedurally drawn is cute
- * but the NinjaDark spritesheet is literally the whole aesthetic.
- *
- * new in this patch:
- *   - real NinjaDark walk/idle/attack/jump/dead sprite loading
- *   - real NinjaRed enemy walk (for the opps)
- *   - real Samurai NPC walk (village guard energy)
- *   - animation registry with CORRECT row mapping (see below)
- *   - real tileset loading (floor / house / nature) — swap-in
- *     ready for when you build the Tiled map
+ * but the NinjaDark spritesheet is literally the whole aesthetic..
  *
  * *** ROW MAP ***
  * Walk.png is 4 rows × 4 cols, 16×16 frames:
@@ -26,10 +18,6 @@ import Phaser from 'phaser';
  *                         audit. so we use flipX for right.
  *   row 3 (frames 12-15)= back-step / unused (dup region)
  *
- * if you reorder these indices, the boy will moonwalk. funny
- * for 2 seconds. then you're crying. don't.
- *
- * shoutout to #game-dev senpai. notice me. he wants to see it.
  * ---------------------------------------------------------------- */
 
 const PAL = {
@@ -108,9 +96,8 @@ export class BootScene extends Phaser.Scene {
     // Anims have to be registered after preload so the textures exist.
     this.makeAnimations();
 
-    // MainMenu isn't written yet in this repo — if it doesn't exist,
-    // switch this to 'Level0_SnowVillage' directly. That's the only
-    // place that needs to change.
+    // MainMenu is registered (MainMenu.ts) — start it. If you ever
+    // gut that file, the fallback you'd want is 'Level0_SnowVillage'.
     this.scene.start('MainMenu');
   }
 
@@ -304,6 +291,7 @@ export class BootScene extends Phaser.Scene {
     this.makeHorizon();    // far background: sky, moon, mountains
     this.makeSlashFx();    // attack slash, hit spark, wisteria petal
     this.makeHouse();      // simple Japanese house
+    this.makeShrine();     // shrine — real landmark prop for Level0
   }
 
   // ==========================================================
@@ -1220,5 +1208,140 @@ private makeHouse(): void {
   ctx.fill();
 
   this.addImage("house",canvas);
+  }
+
+  // ==========================================================
+  // Shrine — the real landmark. Replaces the placeholder torii
+  // that Level0 was using at (63, 16). 48x56 canvas, built from
+  // stone foundation + vermilion pillars + slate roof + snow cap
+  // + gold finial. Level0 attaches a base hitbox of (40, 16) at
+  // offset (4, 40) so the player walks behind the roof.
+  // ==========================================================
+  private makeShrine(): void {
+    if (this.textures.exists('shrine')) return;
+
+    const canvas = this.newCanvas(48, 56);
+    const ctx = this.ctxOf(canvas);
+
+    // Ground shadow
+    ctx.fillStyle = 'rgba(20, 32, 48, 0.40)';
+    ctx.fillRect(4, 52, 40, 3);
+
+    // Stone foundation
+    ctx.fillStyle = PAL.slate;
+    ctx.fillRect(4, 46, 40, 8);
+    ctx.fillStyle = PAL.slateHi;
+    ctx.fillRect(4, 46, 40, 2);
+    ctx.fillStyle = PAL.slateMid;
+    ctx.fillRect(18, 52, 12, 3);
+
+    // Wood wall
+    ctx.fillStyle = PAL.wood;
+    ctx.fillRect(6, 24, 36, 24);
+    ctx.fillStyle = PAL.woodHi;
+    ctx.fillRect(6, 24, 36, 1);
+
+    // Vermilion pillars (left, center, right)
+    for (const px of [6, 22, 38]) {
+      ctx.fillStyle = PAL.vermilionDark;
+      ctx.fillRect(px, 22, 4, 26);
+      ctx.fillStyle = PAL.vermilion;
+      ctx.fillRect(px, 22, 3, 26);
+      ctx.fillStyle = PAL.vermilionHi;
+      ctx.fillRect(px, 22, 1, 26);
+    }
+
+    // Shoji doors
+    ctx.fillStyle = '#f2e8d5';
+    ctx.fillRect(10, 28, 12, 18);
+    ctx.fillRect(26, 28, 12, 18);
+    ctx.fillStyle = PAL.woodDeep;
+    for (let i = 0; i < 3; i++) {
+      ctx.fillRect(10, 32 + i * 4, 12, 1);
+      ctx.fillRect(26, 32 + i * 4, 12, 1);
+    }
+    ctx.fillRect(15, 28, 1, 18);
+    ctx.fillRect(31, 28, 1, 18);
+
+    // Warm interior glow — same amber as the stone lantern
+    ctx.fillStyle = 'rgba(246, 201, 107, 0.28)';
+    ctx.fillRect(11, 29, 10, 16);
+    ctx.fillRect(27, 29, 10, 16);
+
+    // Lower crossbeam
+    ctx.fillStyle = PAL.woodDeep;
+    ctx.fillRect(4, 24, 40, 2);
+    ctx.fillStyle = PAL.woodHi;
+    ctx.fillRect(4, 24, 40, 1);
+
+    // Lower eave
+    ctx.fillStyle = PAL.slateDeep;
+    ctx.fillRect(0, 20, 48, 3);
+    ctx.fillStyle = PAL.slate;
+    ctx.fillRect(0, 20, 48, 2);
+    ctx.fillStyle = PAL.slateHi;
+    ctx.fillRect(0, 20, 48, 1);
+
+    // Middle roof section
+    ctx.fillStyle = PAL.slateDeep;
+    ctx.beginPath();
+    ctx.moveTo(2, 20);
+    ctx.lineTo(8, 12);
+    ctx.lineTo(40, 12);
+    ctx.lineTo(46, 20);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = PAL.slate;
+    ctx.beginPath();
+    ctx.moveTo(4, 19);
+    ctx.lineTo(9, 13);
+    ctx.lineTo(39, 13);
+    ctx.lineTo(44, 19);
+    ctx.closePath();
+    ctx.fill();
+
+    // Upper peak
+    ctx.fillStyle = PAL.slateDeep;
+    ctx.beginPath();
+    ctx.moveTo(10, 12);
+    ctx.lineTo(24, 2);
+    ctx.lineTo(38, 12);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = PAL.slate;
+    ctx.beginPath();
+    ctx.moveTo(12, 11);
+    ctx.lineTo(24, 3);
+    ctx.lineTo(36, 11);
+    ctx.closePath();
+    ctx.fill();
+
+    // Snow cap on the peak — thin strip along the ridge
+    ctx.fillStyle = PAL.snow;
+    ctx.beginPath();
+    ctx.moveTo(11, 11);
+    ctx.lineTo(24, 2);
+    ctx.lineTo(37, 11);
+    ctx.lineTo(36, 12);
+    ctx.lineTo(24, 4);
+    ctx.lineTo(12, 12);
+    ctx.closePath();
+    ctx.fill();
+
+    // Snow on the eaves
+    ctx.fillStyle = PAL.snowHi;
+    ctx.fillRect(0, 19, 48, 2);
+    ctx.fillStyle = PAL.snow;
+    for (const x of [3, 9, 15, 33, 39, 45]) {
+      ctx.fillRect(x, 21, 2, 2);
+    }
+
+    // Gold finial
+    ctx.fillStyle = PAL.gold;
+    ctx.fillRect(23, 0, 2, 3);
+    ctx.fillStyle = '#f4d76b';
+    ctx.fillRect(23, 0, 1, 2);
+
+    this.addImage('shrine', canvas);
   }
 }

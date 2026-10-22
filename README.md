@@ -14,11 +14,11 @@ Made by **GYSK-KRISH**
 
 ---
 
-## 🏔️ Day 4 — 126x126 snowy village map
+## 🏔️ Day 5 — 126x126 snowy village map
 
-Day 4 is live. 
+Day 5 is live. 
 
-![alt text](<day wise test result/Day 4.gif>)
+![day wise test result/Day4.gif](<day wise test result/Day4.gif>)
 
 
 
@@ -32,9 +32,9 @@ Day 4 is live.
 ### Week 1 — Foundations
 - **Day 1** — Scaffolding, player movement, basic attack, dummy ✅
 - **Day 2** — Full snowy valley, atmosphere, props, real tilemap ✅
-- **Day 3** — Adding level 0 , mainmenu , full scren ,update BooTscenes  built 126x126 snowy village map ✅
-- **Day 4** — Add ninja assets, combat effects, tilesets, and snow village updates ✅
-- **Day 5** — 
+- **Day 3** — Adding level 0 , mainmenu , full scren ,update BooTscenes built 126x126 snowy village map ✅
+- **Day 4** — Ninja assets, combat effects, tilesets and snow village updates ✅
+- **Day 5** — Load assets, add tilemap batching and build Snow Village ✅
 - **Day 6** — 
 - **Day 7** — 
 
@@ -165,5 +165,5 @@ Day 4 is live.
 
 
 
-**Current Status:** Day 4 complete  
-**Next Up:** Day 5
+**Current Status:** Day 5 complete  
+**Next Up:** Day 6

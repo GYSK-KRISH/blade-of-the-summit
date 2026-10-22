@@ -15,7 +15,7 @@ import Phaser from 'phaser';
  * side-profile walk, so we mirror the down-facing frames —
  * details in BootScene.makeAnimations).
  *
- * TODO: this whole "draw every tile as an individual sprite"
+ * TODO close: this whole "draw every tile as an individual sprite"
  * approach works but it's heavy. 15.8k sprites in the scene
  * graph at all times. A real tilemap layer (or a RenderTexture
  * baked once at boot) would be way faster. Leaving it as-is
