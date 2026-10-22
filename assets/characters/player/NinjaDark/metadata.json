@@ -1,0 +1,106 @@
+{
+  "character": "NinjaDark",
+  "type": "player",
+  "cellSize": {
+    "width": 16,
+    "height": 16
+  },
+  "spriteSheet": "SpriteSheet.png",
+  "spriteSheetDimensions": {
+    "width": 64,
+    "height": 112
+  },
+  "gridStructure": "4 columns x 7 rows @ 16x16 px",
+  "rowMappingInMasterSheet": {
+    "0": "Walk Cycle Front (Down) - 4 frames",
+    "1": "Walk Cycle Back (Up) Offset A - 4 frames",
+    "2": "Walk Cycle Front (Duplicate of Row 0) - 4 frames",
+    "3": "Walk Cycle Back (Up) Offset B - 4 frames",
+    "4": "Attack Forward - 4 frames",
+    "5": "Jump Arc - 4 frames",
+    "6": "Col 0: Dead (1f), Col 1: Item (1f), Col 2: Special1 (1f), Col 3: Special2 (1f)"
+  },
+  "verifiedAnimationFindings": {
+    "walk": {
+      "source": "SeparateAnim/Walk.png",
+      "dimensions": {
+        "width": 64,
+        "height": 64
+      },
+      "grid": "4 cols x 4 rows @ 16x16",
+      "frameAnalysis": {
+        "row0": "Facing front (Down) - 4-frame walk cycle",
+        "row1": "Facing back (Up) - 4-frame walk cycle (right foot stride)",
+        "row2": "Pixel-identical duplicate of Row 0",
+        "row3": "Facing back (Up) - 4-frame walk cycle (left foot stride)"
+      },
+      "lateralMovementRecommendation": "In Phaser 3, set sprite.setFlipX(true) / false on the walk cycle for Left/Right movement. Alternatively, use true side-profile reference from reference/characters/NinjaGreen/ if distinct profile silhouettes are desired."
+    },
+    "idle": {
+      "source": "SeparateAnim/Idle.png",
+      "dimensions": {
+        "width": 64,
+        "height": 16
+      },
+      "frameAnalysis": "4 frames matching Row 0 frames 0-3 of Walk.png. Functions as a 4-frame front-facing breathing/bobbing idle animation."
+    },
+    "attack": {
+      "source": "SeparateAnim/Attack.png",
+      "dimensions": {
+        "width": 64,
+        "height": 16
+      },
+      "frameAnalysis": "4-frame linear forward strike sequence. Directional attack visuals are supplemented by effects/combat/ overlays."
+    },
+    "jump": {
+      "source": "SeparateAnim/Jump.png",
+      "dimensions": {
+        "width": 64,
+        "height": 16
+      },
+      "frameAnalysis": "4-frame vertical leap / airborne arc."
+    },
+    "singleFrameStances": {
+      "dead": {
+        "source": "SeparateAnim/Dead.png",
+        "dimensions": {
+          "width": 16,
+          "height": 16
+        },
+        "description": "Defeated fall on ground"
+      },
+      "item": {
+        "source": "SeparateAnim/Item.png",
+        "dimensions": {
+          "width": 16,
+          "height": 16
+        },
+        "description": "Hands raised holding item overhead"
+      },
+      "special1": {
+        "source": "SeparateAnim/Special1.png",
+        "dimensions": {
+          "width": 16,
+          "height": 16
+        },
+        "description": "Meditative jutsu pose"
+      },
+      "special2": {
+        "source": "SeparateAnim/Special2.png",
+        "dimensions": {
+          "width": 16,
+          "height": 16
+        },
+        "description": "One hand forward casting jutsu"
+      }
+    },
+    "faceset": {
+      "source": "Faceset.png",
+      "dimensions": {
+        "width": 38,
+        "height": 38
+      },
+      "description": "High-detail dialogue / HUD portrait with transparent background"
+    }
+  }
+}

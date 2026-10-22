@@ -1,6 +1,6 @@
 # **Built for Terra Hack Club — 12 Week Challenge**  
 >Made by **GYSK-KRISH**
-**Current Day: 3 / 84**
+**Current Day: 4 / 84**
 
 # ⚔️ Blade of the Summit
 
@@ -14,14 +14,11 @@ Made by **GYSK-KRISH**
 
 ---
 
-## 🏔️ Day 3 — 126x126 snowy village map
+## 🏔️ Day 4 — 126x126 snowy village map
 
-Day 3 is live. 
+Day 4 is live. 
 
-
-![alt text](<day wise test result/Day3.png>)
-
-
+![alt text](<day wise test result/Day4.gif>)
 
 
 
@@ -34,8 +31,8 @@ Day 3 is live.
 ### Week 1 — Foundations
 - **Day 1** — Scaffolding, player movement, basic attack, dummy ✅
 - **Day 2** — Full snowy valley, atmosphere, props, real tilemap✅
-- **Day 3** — adding level 0 , mainmenu , full scren ,update Boosscenes  built 126x126 snowy village map ✅
-- **Day 4** — 
+- **Day 3** — Adding level 0 , mainmenu , full scren ,update BooTscenes  built 126x126 snowy village map ✅
+- **Day 4** — Asset loading,arragment✅
 - **Day 5** — 
 - **Day 6** — 
 - **Day 7** — 
@@ -163,5 +160,9 @@ Day 3 is live.
 
 ---
 
-**Current Status:** Day 3 complete  
-**Next Up:** Day 4
+
+
+
+
+**Current Status:** Day 4 complete  
+**Next Up:** Day 5

@@ -22,7 +22,7 @@ scale: {
     default: 'arcade',
     arcade: { 
       debug: false, 
-      gravity: { y: 0 } 
+      gravity: { x: 0, y: 0 }
     }
   },
   scene: [BootScene, MainMenu, Level0_SnowVillage] 

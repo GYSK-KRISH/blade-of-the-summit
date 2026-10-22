@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0 ,user-scalable=no" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
     
     <title>BLADE OF THE SUMMIT</title>
     
     <style>
+        
         body {
             margin: 0;
             padding: 0;
@@ -20,31 +20,35 @@
             overflow: hidden;
             background: #0c0d12;
             display: flex;
-            justify-content: center;
-            align-items: center;
+            justify-content: center; 
+            align-items: center; 
         }
+
         #game-container {
-            display: flex;
-            justify-content: center;    
-            align-items: center;
+            /* Let Phaser scale the canvas inside this container */
+            max-width: 100%;
+            max-height: 100%;
         }
+
         canvas {
             image-rendering: pixelated;
             image-rendering: crisp-edges;
-            image-rendering: -moz-crisp-edges;
-            image-rendering: -o-crisp-edges;
-            image-rendering: -webkit-optimize-contrast;
-            image-rendering: optimize-contrast;
+            /* Do NOT force width/height here, let Phaser handle it */
+            display: block;
         }
     </style>
-
-  <script type="module" crossorigin src="./assets/index-DwZG0Dtq.js"></script>
+        }
+    </style>
+Save both files, hard refre
+    </style>
+  <script type="module" crossorigin src="./assets/index-BT2JJNOd.js"></script>
 </head>
 <body>
     
     <div id="game-container">
-        <canvas id="game-canvas" width="800" height="600"></canvas>
-    </div>
+        <!-- phaser injects the canvas here so pls dont delete this div -->
+    </div>
+    
+    <!-- the actual game code -->
 </body>
 </html>
-
