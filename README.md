@@ -32,7 +32,7 @@ Day 6 is live.
 - **Day 3** — Adding level 0 , mainmenu , full scren ,update BooTscenes built 126x126 snowy village map ✅
 - **Day 4** — Ninja assets, combat effects, tilesets and snow village updates ✅
 - **Day 5** — Load assets, add tilemap batching and build Snow Village ✅
-- **Day 6** — Making new house,add street ligths and sloving some bugs
+- **Day 6** — Making new house,add street ligths and sloving some bugs ✅
 - **Day 7** — 
 
 ---
