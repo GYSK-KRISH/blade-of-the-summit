@@ -14,13 +14,10 @@ Made by **GYSK-KRISH**
 
 ---
 
-## 🏔️ Day 5 — 126x126 snowy village map
+## 🏔️ Day  6— 126x126 snowy village map
 
-Day 5 is live. 
-
-![day wise test result/Day4.gif](<day wise test result/Day4.gif>)
-
-
+Day 6 is live. 
+![alt text](<day wise test result/DAY6.png>)
 
 
 ## 📅 Progress
@@ -35,7 +32,7 @@ Day 5 is live.
 - **Day 3** — Adding level 0 , mainmenu , full scren ,update BooTscenes built 126x126 snowy village map ✅
 - **Day 4** — Ninja assets, combat effects, tilesets and snow village updates ✅
 - **Day 5** — Load assets, add tilemap batching and build Snow Village ✅
-- **Day 6** — 
+- **Day 6** — Making new house,add street ligths and sloving some bugs
 - **Day 7** — 
 
 ---
@@ -165,5 +162,5 @@ Day 5 is live.
 
 
 
-**Current Status:** Day 5 complete  
-**Next Up:** Day 6
+**Current Status:** Day 6 complete  
+**Next Up:** Day 7
