@@ -1,23 +1,109 @@
-# **Built for Terra Hack Club — 12 Week Challenge**  
->Made by **GYSK-KRISH**
-**Current Day: 4 / 84**
+# **⚔️ Blade of the Summit ⚔️** 
+> "Throughout heaven and earth, I alone making this game."
 
-# ⚔️ Blade of the Summit
+![alt text](image/DAY6.png)
+![alt text](<image/game perview.gif>)
 
-> "Throughout heaven and earth, I alone generate the pixels."
 
-A top-down 2D action game built with **Phaser 3** + **TypeScript**.  
-Snowy Japanese mountain valley. Demon Slayer energy. Procedural everything.
+```text
+Inspired by demon slayer to make this 2D action adventure built with phaser 3 + typescript. 
+Ancient shrines,mystery forests, snow biomes and breathing style battlefields feel.
+Real ninja spritesheets for the player (tanjiro-coded) + enemies, everything else cooked pixel by pixel. 
+Fight powerful enemies, master combat, climb to the summit one map at a time.
+```
+
 
 **Built for Terra Hack Cloud — 12 Week Challenge**  
 Made by **GYSK-KRISH**
 
+>Current Day: 7 / 84
+---
+# 🪄 Features 
+
+ - **Main menu** with *scroll-wheel character select* and *keyboard/mouse* navigation
+ - **126×126 snow village** 
+- **Procedural pixel art** drawn on canvas at boot: houses, shrine, torii gates, lanterns, pines, rocks, bridge
+- **Real character sprites** [(NinjaDark player, NinjaRed enemy)](assets/licenses) from the Ninja Adventure asset pack
+- **Y-sorted** so you walk behind and in front of buildings and trees
+- **Atmosphere:** falling snow, drifting mist, camera follow with fade-in
+- **Collision** for cliffs, ice, trees, houses and props
+
 ---
 
-## 🏔️ Day  6— 126x126 snowy village map
+## 🎮 Controls
+ 
+| Action | Keys |
+|---|---|
+| Move | `W A S D` or Varrow keys` |
+| Attack *(in progress)* | `Space` or `J` |
+| Menu navigate | `↑ ↓` or `mouse` |
+| Menu select | `Enter`, `Space`, `click` |
 
-Day 6 is live. 
-![alt text](<day wise test result/DAY6.png>)
+
+## 🚀 Run Setup
+ 
+```bash
+git clone https://github.com/GYSK-KRISH/blade-of-the-summit.git
+cd blade-of-the-summit
+npm install
+npm run dev
+```
+> `http://localhost:3000` or `http://localhost:5173`
+
+
+![alt text](image/setup.png)
+
+
+##  Coding Language 
+ 
+- ***Phaser 3***
+- ***TypeScript***
+- ***Vite***
+
+## 🗂️ Project Structure
+
+```text
+Blade-of-the-Summit/
+├── .github/
+├── assets/
+├── dist/
+├── image/
+├── node_modules/
+├── src/
+│   ├── entities/
+│   │   ├── Dummy.ts
+│   │   └── Player.ts
+│   ├── scenes/
+│   │   ├── BootScene.ts
+│   │   ├── Level0_SnowVillage.ts
+│   │   ├── LevelComplete.ts   #not start yet
+│   │   └── MainMenu.ts
+│   ├── types/
+│   │   └── index.ts
+│   └── main.ts
+├── .gitignore
+├── index.html
+├── package-lock.json
+├── package.json
+├── README.md
+├── tsconfig.json
+└── vite.config.ts
+```
+
+---
+## 💡 Things I Learned
+
+- **Efficient map rendering:** 
+- **Diagonal movement:**
+- **Collision detection:** 
+- **Physics world bounds:**
+- **Asset Integration**
+- **Talking with code**
+
+
+>There more 11 weeks to go. More to build, more to learn and  more to grow.
+
+----
 
 
 ## 📅 Progress
@@ -32,9 +118,15 @@ Day 6 is live.
 - **Day 3** — Adding level 0 , mainmenu , full scren ,update BooTscenes built 126x126 snowy village map ✅
 - **Day 4** — Ninja assets, combat effects, tilesets and snow village updates ✅
 - **Day 5** — Load assets, add tilemap batching and build Snow Village ✅
-- **Day 6** — Making new house,add street ligths and sloving some bugs ✅
-- **Day 7** — 
+- **Day 6** — Making new house,add lanterns and sloving some bugs ✅
+- **Day 7** — Writing Readme file
 
+
+### Next up
+- Hook the `Player` attack into Level 0
+- Enemy and health
+- Shrine objective trigger
+- Maybe Start Level 1
 ---
 
 ### Week 2
@@ -158,9 +250,25 @@ Day 6 is live.
 
 ---
 
+**Current Status:** Day 7 complete  
+**Next Up:** Day 8
 
+---
 
+##  Credits
+ 
+>- Sprites and tilesets: [**Ninja Adventure Asset Pack**](https://pixel-boy.itch.io/ninja-adventure-asset-pack)
+>- Engine: [Phaser 3](https://phaser.io/)
+>- **YouTube Channels I Learn From :**
+>1. [Phaser](https://www.youtube.com/@PhaserYouTube)
+>2. [Apan college](https://www.youtube.com/@ApnaCollegeOfficial)
+>3. [JSLegendDev](https://www.youtube.com/@JSLegendDev)
+>4. [Game Maker's Toolkit](https://www.youtube.com/@GMTK)
+>5. [Brackeys](https://www.youtube.com/@Brackeys) 
+>6. [Dani](https://www.youtube.com/@danidev) 
+>7. [Sebastian Lague](https://www.youtube.com/@SebastianLague)
+>8. [HeartBeast](https://www.youtube.com/@uheartbeast)
+>9. [freeCodeCamp.org](https://www.youtube.com/@freecodecamp) 
+>10. [Power of Knowledge](https://www.youtube.com/@PowerofKnowledge)
 
-
-**Current Status:** Day 6 complete  
-**Next Up:** Day 7
+---

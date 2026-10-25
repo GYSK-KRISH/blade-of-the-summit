@@ -24,7 +24,6 @@ import Phaser from 'phaser';
  * ----------------------------------------------------------- */
 
 
-
 const TILE_SIZE = 16;
 const MAP_WIDTH = 126;
 const MAP_HEIGHT = 126;
@@ -44,6 +43,7 @@ const TILE = {
 export class Level0_SnowVillage extends Phaser.Scene {
   private player!: Phaser.Physics.Arcade.Sprite;
   private walls!: Phaser.Physics.Arcade.StaticGroup;
+  private tileLayer!: Phaser.Tilemaps.TilemapLayer;
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   // wasd is typed as any because Phaser's addKeys returns a dynamic
   // object keyed by the strings you passed in. There's a tighter type
@@ -72,6 +72,8 @@ export class Level0_SnowVillage extends Phaser.Scene {
     this.walls = this.physics.add.staticGroup();
 
     this.generateMassiveWorld();
+    this.spawnVillagePopulation();
+
 
     // Spawn at the bottom of the path so the player has to walk north
     // to reach the shrine. Down-facing idle frame for a clean start.
@@ -86,6 +88,7 @@ export class Level0_SnowVillage extends Phaser.Scene {
     this.player.setSize(8, 8).setOffset(4, 8);
     this.player.setCollideWorldBounds(true);
     this.physics.add.collider(this.player, this.walls);
+    this.physics.add.collider(this.player, this.tileLayer);
 
     // Demo enemy. Just standing on the path so you can see it works.
     // Not stored as a class field yet because there's no AI or combat
@@ -101,6 +104,7 @@ export class Level0_SnowVillage extends Phaser.Scene {
     red.setDepth(red.y);
     red.anims.play('ninja-red-walk-down');
     this.physics.add.collider(red, this.walls);
+    this.physics.add.collider(red, this.tileLayer);
 
     // Camera. 2x zoom because at 1x the 16px tiles are tiny. Lerp
     // of 0.1 on both axes so it trails the player slightly instead of
@@ -122,7 +126,7 @@ export class Level0_SnowVillage extends Phaser.Scene {
   }
 
   update(): void {
-    const speed = 150;
+    const speed = 800;
     this.player.setVelocity(0);
 
     // else-if chain rather than separate checks. If you check X and Y
@@ -167,14 +171,16 @@ export class Level0_SnowVillage extends Phaser.Scene {
     this.player.setDepth(this.player.y);
   }
 
-  private generateMassiveWorld(): void {
-    // 1. Fill the whole map with snow first, then paint everything
-    // else on top of it. Way simpler than trying to only draw snow
-    // where it's needed.
+ private generateMassiveWorld(): void {
+    // 1. Build the tile grid as plain numbers. Everything starts as
+    // snow, then we paint the river / path / cliff over the top.
+    // This is the same layout as before, just expressed as data
+    // instead of ~15.8k individual Image game objects.
+    const data: number[][] = [];
     for (let r = 0; r < MAP_HEIGHT; r++) {
-      for (let c = 0; c < MAP_WIDTH; c++) {
-        this.drawTile(c, r, TILE.SNOW, 0);
-      }
+      const row: number[] = [];
+      for (let c = 0; c < MAP_WIDTH; c++) row.push(TILE.SNOW);
+      data.push(row);
     }
 
     // 2. River. sin() gives it a natural curve without needing to
@@ -185,12 +191,7 @@ export class Level0_SnowVillage extends Phaser.Scene {
       const start = 15 + offset;
       const end = 22 + offset;
       for (let c = start; c < end; c++) {
-        this.drawTile(c, r, TILE.ICE, 1);
-        // No swimming in this game. Every ice tile gets a hitbox.
-        // TODO: this creates ~880 static bodies just for the river.
-        // Should really be 3 or 4 big rectangle zones instead. Not
-        // hurting perf yet, but it will when there's more in the map.
-        this.addHitbox(c, r);
+        data[r][c] = TILE.ICE;
       }
     }
 
@@ -198,88 +199,134 @@ export class Level0_SnowVillage extends Phaser.Scene {
     // can actually get from spawn to shrine without getting stuck.
     for (let r = 10; r < MAP_HEIGHT - 5; r++) {
       for (let c = 60; c < 66; c++) {
-        this.drawTile(c, r, TILE.PATH, 0);
+        data[r][c] = TILE.PATH;
       }
     }
 
     // 4. Cliff / shrine plateau at the north end of the map.
     // Fully blocked off so the player has to enter through the torii.
-    for (let r = 5; r < 15; r++) {
-      for (let c = 50; c < 75; c++) {
-        this.drawTile(c, r, TILE.CLIFF, 1);
-        this.addHitbox(c, r);
+    for (let r = 0; r < 20; r++) {
+      for (let c = 40; c < 90; c++) {
+         if (c > 58 && c < 68 && r > 10) continue; // Gap for stairs
+        data[r][c] = TILE.CLIFF;
       }
     }
-    // Placeholder shrine marker for now. Was originally trying to
-    // spawn a 'shrine' texture that doesn't exist, so this just drops
-    // an extra torii down as a landmark. Real shrine comes later.
-    this.addTorii(63, 16);
 
-    // 5. Torii gates — one at the shrine entrance, one at the south
+    // 5. The Bridge visual path data (Must happen BEFORE baking)
+    for (let r = 53; r < 59; r++) {
+      for (let c = 10; c < 35; c++) {
+        data[r][c] = TILE.PATH;
+      }
+    }
+
+    // 6. The Frozen Pond (Right side)
+    const pondX = 90;
+    const pondY = 50;
+    const pondRadius = 12;
+    for (let r = pondY - pondRadius; r < pondY + pondRadius; r++) {
+      for (let c = pondX - pondRadius; c < pondX + pondRadius; c++) {
+        if (Phaser.Math.Distance.Between(c, r, pondX, pondY) < pondRadius) {
+          data[r][c] = TILE.ICE;
+        }
+      }
+    }
+
+    // Bake into a single tilemap layer. This is the perf fix for the
+    // two Level0 TODOs: one GameObject instead of 15,876, and the
+    // river/cliff collision is handled by setCollision below (which
+    // the engine merges into shared rectangles) instead of ~1,130
+    // individual physics zones.
+    const map = this.make.tilemap({
+      data,
+      tileWidth: TILE_SIZE,
+      tileHeight: TILE_SIZE,
+    });
+    // Non-null asserted: BootScene.makeTiles() registers 'tiles' in
+    // preload, so this is guaranteed to exist by the time Level0 runs.
+    const tileset = map.addTilesetImage(
+      'tiles', 'tiles', TILE_SIZE, TILE_SIZE, 0, 0,
+    )!;
+    this.tileLayer = map.createLayer(0, tileset, 0, 0)!;
+    this.tileLayer.setDepth(0);
+    // Cliff + ice are impassable. Everything else is walkable.
+    this.tileLayer.setCollision([TILE.CLIFF, TILE.ICE]);
+
+    // 7. Real shrine landmark at the north end of the path.
+    this.addShrine(63, 10);
+
+    // 6. Torii gates — one at the shrine entrance, one at the south
     // edge of the map. Decorative more than functional right now.
-    this.addTorii(63, 18);
-    this.addTorii(63, 110);
+    this.addTorii(63, 115);
+    this.addTorii(63, 22);
+    // 7. Houses & Japanese Houses. Hardcoded positions for the village.
+    // Large Japanese houses maths always win 
+    this.addJapaneseHouse(50, 45);
+    this.addJapaneseHouse(75, 45);
+    this.addJapaneseHouse(50, 65);
+    this.addJapaneseHouse(75, 65);
+    this.addJapaneseHouse(50, 90);
+    this.addJapaneseHouse(75, 90);
+    this.addJapaneseHouse(45, 105);
+    this.addJapaneseHouse(80, 105);
 
-    // 6. Houses. Hardcoded positions because there are only four and
-    // a proper prefab system is overkill for a level that might change
-    // layout next week.
-    this.addHouse(45, 40);
-    this.addHouse(80, 40);
-    this.addHouse(40, 45);
-    this.addHouse(85, 45);
-    this.addHouse(40, 55);
-    this.addHouse(55, 75);
-    this.addHouse(10, 85);
-    this.addHouse(20, 55);
+    // Small houses bro maths 
+     this.addHouse(40, 35); // Left Top
+     this.addHouse(85, 35); // Right Top
+     this.addHouse(40, 75); // Left Mid
+     this.addHouse(85, 75); // Right Mid;
+
+    // 8. Rocks scattered around the village
+    this.addRock(35, 55);
+    this.addRock(80, 25);
+    this.addRock(80, 95);
+    this.addRock(35, 95);
     
 
-    // 7. Trees. 300 random ones, but skip the path column so the
-    // corridor stays walkable. 
-    // check is a lazy band around the path (60-65) with a bit of
-    // buffer on each side so trees don't spawn right on the edge.
-    //
-    // This is not great — a tree can still land on top of a house
-    // or the torii. Hasn't been noticeable yet because there's enough
-    // open space, but worth checking if the map gets denser.
-    for (let i = 0; i < 300; i++) {
-      const randC = Phaser.Math.Between(5, MAP_WIDTH - 5);
-      const randR = Phaser.Math.Between(5, MAP_HEIGHT - 5);
-      if (randC > 55 && randC < 70) continue;
+    // 9. Trees. 400 random ones, but skip the path column so the
+    // corridor stays walkable.  Fill borders with dense forest 
+    // This time we also use the new 'snow-spike' asset occasionally.
+    for (let i = 0; i < 400; i++) {
+      const randC = Phaser.Math.Between(2, MAP_WIDTH - 2);
+      const randR = Phaser.Math.Between(2, MAP_HEIGHT - 2);
+
+    // ok, Don't place trees on paths, ice, or cliffs
+      if (data[randR][randC] !== TILE.SNOW) continue;   // ai help me  thank ypu chat gpt  
+      
+    //ok now, I havemake village at center and don't place trees in the village area
+      if (randC > 35 && randC < 95 && randR > 30 && randR < 100) continue;
 
       const x = randC * TILE_SIZE;
       const y = randR * TILE_SIZE;
-      const tree = this.walls.create(x, y, 'snow_tree').setDepth(y);
-      // Small hitbox at the trunk so the player can walk behind the
-      // branches without getting bumped by them.
-      tree.setSize(12, 12).setOffset(10, 26);
+      
+      // 20% chance to use the snow-spike tree asset
+      if (Phaser.Math.Between(0, 100) > 70) {
+        const tree = this.walls.create(x, y, 'snow-spike').setDepth(y);
+        tree.setSize(12, 12).setOffset(10, 20);
+      } else {
+        const tree = this.walls.create(x, y, 'snow_tree').setDepth(y);
+        tree.setSize(12, 12).setOffset(10, 26);
+      }
     }
+  
+    // 10. Lanterns lining the path
+    for (let r = 30; r < 110; r += 10) {
+      this.addLantern(58, r); // Left side of path
+      this.addLantern(68, r); // Right side of path
+    }
+
+    // 11. The Bridge visual Image (Now outside the loop!)
+    this.add.image(25 * TILE_SIZE, 56 * TILE_SIZE, 'bridge').setDepth(56 * TILE_SIZE);
   }
+  // --- helpers --
 
-  // --- helpers ---
-
-  private drawTile(
-    c: number,
-    r: number,
-    frame: number,
-    depth: number,
-  ): void {
-    // +TILE_SIZE/2 centers the sprite on the tile cell. Phaser's
-    // default origin is 0.5,0.5, so without the offset everything
-    // shifts down-right by half a tile.
+  private addLantern(c: number, r: number): void {
     const x = c * TILE_SIZE + TILE_SIZE / 2;
     const y = r * TILE_SIZE + TILE_SIZE / 2;
-    this.add.image(x, y, 'tiles', frame).setDepth(depth);
-  }
-
-  private addHitbox(c: number, r: number): void {
-    // Invisible physics zone, one per tile. See the TODO in
-    // generateMassiveWorld — this should really be batched.
-    const x = c * TILE_SIZE + TILE_SIZE / 2;
-    const y = r * TILE_SIZE + TILE_SIZE / 2;
-    const zone = this.add.zone(x, y, TILE_SIZE, TILE_SIZE);
-    this.physics.add.existing(zone, true);
-    this.walls.add(zone);
-  }
+    const lantern = this.walls.create(x, y, 'stone_lantern') as Phaser.Physics.Arcade.Sprite;
+      lantern.setDepth(y);
+      // 16x32 texture. Hitbox is 12x12 at the base so the player can walk behind the top.
+      lantern.setSize(12, 12).setOffset(2, 10);
+    }
 
   private addTorii(c: number, r: number): void {
     const x = c * TILE_SIZE + TILE_SIZE / 2;
@@ -298,7 +345,34 @@ export class Level0_SnowVillage extends Phaser.Scene {
     house.setDepth(y);
     // One hitbox for the whole building. 32x20 at the base — the roof
     // extends above the hitbox so the player can walk "behind" it.
-    house.setSize(32, 20).setOffset(0, 12);
+  house.setSize(80, 30).setOffset(8, 60);  
+  }
+
+  private addJapaneseHouse(c: number, r: number): void {
+    const x = c * TILE_SIZE + TILE_SIZE / 2;
+    const y = r * TILE_SIZE + TILE_SIZE / 2;
+    const house = this.walls.create(x, y, 'japanese_house') as Phaser.Physics.Arcade.Sprite;
+    house.setDepth(y);
+    // 64x64 texture. 52x24 hitbox at the base so the player walks behind the roof
+    house.setSize(52, 24).setOffset(6, 36);
+  }
+
+  private addRock(c: number, r: number): void {
+    const x = c * TILE_SIZE + TILE_SIZE / 2;
+    const y = r * TILE_SIZE + TILE_SIZE / 2;
+    const rock = this.walls.create(x, y, 'frost_rock') as Phaser.Physics.Arcade.Sprite;
+    rock.setDepth(y);
+    // 24x20 texture. 20x10 hitbox at the bottom
+    rock.setSize(20, 10).setOffset(2, 10);
+  }
+
+  private addShrine(c: number, r: number): void {
+    const x = c * TILE_SIZE + TILE_SIZE / 2;
+    const y = r * TILE_SIZE + TILE_SIZE / 2;
+    const shrine = this.walls.create(x, y, 'shrine') as Phaser.Physics.Arcade.Sprite;
+    shrine.setDepth(y);
+    // 48x56 texture. Base hitbox at the bottom.
+    shrine.setSize(40, 16).setOffset(4, 40);
   }
 
   private createHUD(): void {
@@ -317,17 +391,11 @@ export class Level0_SnowVillage extends Phaser.Scene {
     ).setScrollFactor(0).setDepth(1000);
   }
 
+
   private createAtmosphere(): void {
-    // Snow particles, screen-space. Scroll factor 0 so the snow is
-    // always in front of the camera rather than anchored to world
-    // coords — makes it feel like it's falling on the player, not
-    // just falling in a particular world region.
-    //
-    // blendMode ADD makes the flakes brighter where they overlap,
-    // which reads better against the snow-colored ground than a
-    // plain white sprite would.
+    // 1. Falling Snow
     this.add.particles(0, -10, 'snow_flake', {
-      x: { min: 0, max: this.cameras.main.width },
+      x: { min: 0, max: this.scale.width }, // Use scale.width for full screen
       y: -10,
       lifespan: 4000,
       speedY: { min: 50, max: 100 },
@@ -337,5 +405,31 @@ export class Level0_SnowVillage extends Phaser.Scene {
       frequency: 50,
       blendMode: 'ADD',
     }).setScrollFactor(0).setDepth(999);
+
+    // 2. Drifting Mist
+    if (this.textures.exists('mist_cloud')) {
+      this.add.particles(0, 0, 'mist_cloud', {
+        x: { min: -200, max: this.scale.width },
+        y: { min: 0, max: this.scale.height },
+        lifespan: 12000,
+        speedX: { min: 10, max: 25 },
+        speedY: { min: -5, max: 5 },
+        alpha: { start: 0, end: 0.15, ease: 'Linear' },
+        scale: { start: 1, end: 1.5 },
+        quantity: 1,
+        frequency: 2000,
+        blendMode: 'ADD',
+      }).setScrollFactor(0).setDepth(998);
+    }
   }
+  
+  private spawnVillagePopulation(): void {
+    // Spawn some villagers in the village
+    for (let i = 0; i < 5; i++) {
+      const x = Math.floor(Math.random() * 10) + 10;
+      const y = Math.floor(Math.random() * 10) + 10;
+      this.add.image(x * TILE_SIZE, y * TILE_SIZE, 'villager').setDepth(y * TILE_SIZE);
+    }
+  }
+
 }
