@@ -1,0 +1,132 @@
+{
+  "character": "NinjaMasked",
+  "type": "alternate",
+  "cellSize": {
+    "width": 16,
+    "height": 16
+  },
+  "spriteSheet": "SpriteSheet.png",
+  "spriteSheetDimensions": {
+    "width": 64,
+    "height": 112
+  },
+  "directions": [
+    "Down",
+    "Up",
+    "Left",
+    "Right"
+  ],
+  "animations": {
+    "walk": {
+      "source": "SeparateAnim/Walk.png",
+      "dimensions": {
+        "width": 64,
+        "height": 64
+      },
+      "grid": "4 cols x 4 rows",
+      "rows": {
+        "0": {
+          "direction": "Down",
+          "frames": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        "1": {
+          "direction": "Up",
+          "frames": [
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        "2": {
+          "direction": "Left",
+          "frames": [
+            8,
+            9,
+            10,
+            11
+          ]
+        },
+        "3": {
+          "direction": "Right",
+          "frames": [
+            12,
+            13,
+            14,
+            15
+          ]
+        }
+      },
+      "recommendedFrameRate": 8
+    },
+    "idle": {
+      "source": "SeparateAnim/Idle.png",
+      "dimensions": {
+        "width": 64,
+        "height": 16
+      },
+      "frames": {
+        "0": "Down",
+        "1": "Up",
+        "2": "Left",
+        "3": "Right"
+      },
+      "recommendedFrameRate": 4
+    },
+    "attack": {
+      "source": "SeparateAnim/Attack.png",
+      "dimensions": {
+        "width": 64,
+        "height": 16
+      },
+      "frames": 4,
+      "recommendedFrameRate": 12
+    },
+    "jump": {
+      "source": "SeparateAnim/Jump.png",
+      "dimensions": {
+        "width": 64,
+        "height": 16
+      },
+      "frames": 4,
+      "recommendedFrameRate": 8
+    },
+    "dead": {
+      "source": "SeparateAnim/Dead.png",
+      "dimensions": {
+        "width": 16,
+        "height": 16
+      },
+      "frames": 1
+    },
+    "item": {
+      "source": "SeparateAnim/Item.png",
+      "dimensions": {
+        "width": 16,
+        "height": 16
+      },
+      "frames": 1
+    },
+    "special1": {
+      "source": "SeparateAnim/Special1.png",
+      "dimensions": {
+        "width": 16,
+        "height": 16
+      },
+      "frames": 1
+    },
+    "special2": {
+      "source": "SeparateAnim/Special2.png",
+      "dimensions": {
+        "width": 16,
+        "height": 16
+      },
+      "frames": 1
+    }
+  }
+}
