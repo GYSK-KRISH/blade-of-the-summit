@@ -72,7 +72,7 @@ export class Level0_SnowVillage extends Phaser.Scene {
     this.walls = this.physics.add.staticGroup();
 
     this.generateMassiveWorld();
-    this.spawnVillagePopulation();
+    //this.spawnVillagePopulation();
 
 
     // Spawn at the bottom of the path so the player has to walk north
@@ -423,6 +423,11 @@ export class Level0_SnowVillage extends Phaser.Scene {
     }
   }
   
+}  
+
+
+/*
+
   private spawnVillagePopulation(): void {
     // Spawn some villagers in the village
     for (let i = 0; i < 5; i++) {
@@ -430,6 +435,7 @@ export class Level0_SnowVillage extends Phaser.Scene {
       const y = Math.floor(Math.random() * 10) + 10;
       this.add.image(x * TILE_SIZE, y * TILE_SIZE, 'villager').setDepth(y * TILE_SIZE);
     }
-  }
 
-}
+  }
+  
+*/

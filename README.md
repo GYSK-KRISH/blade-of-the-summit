@@ -16,7 +16,7 @@ Fight powerful enemies, master combat, climb to the summit one map at a time.
 **Built for Terra Hack Cloud — 12 Week Challenge**  
 Made by **GYSK-KRISH**
 
->Current Day: 7 / 84
+>Current Day: 8 / 84
 ---
 # 🪄 Features 
 
@@ -119,7 +119,7 @@ Blade-of-the-Summit/
 - **Day 4** — Ninja assets, combat effects, tilesets and snow village updates ✅
 - **Day 5** — Load assets, add tilemap batching and build Snow Village ✅
 - **Day 6** — Making new house,add lanterns and sloving some bugs ✅
-- **Day 7** — Writing Readme file
+- **Day 7** — Writing Readme file ✅
 
 
 ### Next up
@@ -130,7 +130,7 @@ Blade-of-the-Summit/
 ---
 
 ### Week 2
-- **Day 8** — 
+- **Day 8** —  Fix MainMenu character selector , visible names and texture keys ✅
 - **Day 9** — 
 - **Day 10** — 
 - **Day 11** — 

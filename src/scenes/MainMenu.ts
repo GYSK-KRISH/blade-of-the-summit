@@ -22,15 +22,29 @@ interface MenuOption {
   action: () => void;
 }
 
+// character data type
+interface CharacterData {
+  name: string;
+  texture: string;
+  anim: string;
+}
+
+
 export class MainMenu extends Phaser.Scene {
   private menuOptions: MenuOption[] = [];
   private buttonTexts: Phaser.GameObjects.Text[] = [];
   private selectedIndex: number = 0; 
 
   // Scroll wheel character stuff
-  private characters: string[] = ['Ninja', 'Samurai', 'Viking', 'Knight', 'Pirate'];
+  private characters: CharacterData[] = [
+  { name: 'Ninja',     texture: 'ninja-dark-idle', anim: 'ninja-dark-idle-anim' },
+  { name: 'Samurai',   texture: 'samurai-walk',    anim: 'samurai-walk-down'    },
+];
+
   private selectedCharacterIndex: number = 0;
   private characterText!: Phaser.GameObjects.Text;
+  private characterPreview!: Phaser.GameObjects.Sprite;
+  private titleText!: Phaser.GameObjects.Text;
 
   constructor() {
     super('MainMenu');
@@ -42,7 +56,22 @@ export class MainMenu extends Phaser.Scene {
 
     // Add the mountain horizon we generated in BootScene for free
     // (scaled up 2.5x so it fits the bottom nicely)
-    this.add.image(400, 500, 'mountain_horizon').setScale(2.5).setAlpha(0.8);
+    this.add.image(400, 600, 'mountain_horizon').setOrigin(0.5, 1).setScale(2.5).setAlpha(0.9);
+
+    // Drifting Mist at the bottom
+    if (this.textures.exists('mist_cloud')) {
+      this.add.particles(0, 500, 'mist_cloud', {
+        x: { min: 0, max: 800 },
+        y: { min: 450, max: 600 },
+        lifespan: 10000,
+        speedX: { min: 10, max: 20 },
+        alpha: { start: 0, end: 0.2, ease: 'Linear' },
+        scale: { start: 1.5, end: 2 },
+        quantity: 1,
+        frequency: 1500,
+        blendMode: 'ADD',
+      });
+    }
 
     // Generate a tiny snow particle on the fly so it doesn't crash
     if (!this.textures.exists('menu-snow')) {
@@ -76,14 +105,34 @@ export class MainMenu extends Phaser.Scene {
     }).setOrigin(0.5);
     title.setShadow(0, 0, '#48cae4', 15, true, true);
 
+    this.tweens.add({
+      targets: this.titleText,
+      y: 110,
+      duration: 2000,
+      ease: 'Sine.easeInOut',
+      yoyo: true,
+      repeat: -1
+    });
+
+
     // 3. CHARACTER SELECTOR
-    this.add.text(400, 220, 'SELECT YOUR SLAYER (Scroll Wheel)', {
+    this.add.text(400, 180, 'SELECT YOUR SLAYER (Scroll Wheel)', {
       fontSize: '18px', fontFamily: 'monospace', color: '#5c677d'
     }).setOrigin(0.5);
+    
+    // Character Shadow
+    this.add.ellipse(400, 305, 60, 20, 0x000000, 0.4);
+    
+    // The actual sprite preview
+    this.characterPreview = this.add.sprite(400, 300, this.characters[0].texture, 0)
+      .setScale(4)
+      .setOrigin(0.5, 1); // Anchor to feet
 
-    this.characterText = this.add.text(400, 260, `> ${this.characters[this.selectedCharacterIndex]} <`, {
-      fontSize: '32px', fontFamily: 'monospace', color: '#ffcc00', fontStyle: 'bold'
-    }).setOrigin(0.5);
+    this.characterText = this.add.text(400, 340, `> ${this.characters[0].name} <`, {
+      fontSize: '28px', fontFamily: 'monospace', color: '#ffcc00', fontStyle: 'bold' }).setOrigin(0.5);
+
+    // Play initial animation
+    this.updateCharacterText();
 
     // 4. MENU OPTIONS
     this.menuOptions = [
@@ -114,12 +163,17 @@ export class MainMenu extends Phaser.Scene {
     this.buildMenuUI();
     this.setupInputs();
 
+    // Instruction setup
+    this.add.text(400, 560, 'Press ENTER or SPACE to select', {
+      fontSize: '14px', fontFamily: 'monospace', color: '#5c677d'
+    }).setOrigin(0.5);
+
     this.cameras.main.fadeIn(800, 10, 25, 47);
   }
 
   private buildMenuUI(): void {
-    const startY = 350;
-    const spacing = 60;
+    const startY = 400;
+    const spacing = 55;
 
     this.menuOptions.forEach((option, index) => {
       // Changed from 512 to 400 so it's centered
@@ -164,19 +218,59 @@ export class MainMenu extends Phaser.Scene {
     this.buttonTexts.forEach((btn, i) => {
       if (i === index) {
         btn.setStyle({ color: '#48cae4', backgroundColor: '#1a3a5c' });
+
+    // Pulse effect on selection
+        this.tweens.killTweensOf(btn);
         btn.setScale(1.1);
+        this.tweens.add({
+          targets: btn,
+          scale: 1.05,
+          duration: 800,
+          ease: 'Sine.easeInOut',
+          yoyo: true,
+          repeat: -1
+        });
+        
       } else {
         btn.setStyle({ color: '#ffffff', backgroundColor: '#112240' });
         btn.setScale(1.0);
+
+        
       }
+    });
+
+    
+  }
+  // adding palyer animatsion to the character preview and update text 
+  private updateCharacterText(): void {
+  const char = this.characters[this.selectedCharacterIndex];
+    // Update Text
+    this.characterText.setText(`> ${char.name} <`);
+    this.characterText.setScale(1.2);
+    this.tweens.add({ targets: this.characterText, scale: 1.0, duration: 150, ease: 'Back.easeOut' });
+
+    // Update Sprite
+    this.characterPreview.setTexture(char.texture);
+    
+    // Play animation 
+    if (this.anims.exists(char.anim)) {
+      this.characterPreview.play(char.anim);
+    } else {
+      this.characterPreview.stop();
+      this.characterPreview.setFrame(0);
+    }
+
+    // Bounce the preview sprite
+    this.tweens.killTweensOf(this.characterPreview);
+    this.characterPreview.y = 300;
+    this.tweens.add({
+      targets: this.characterPreview,
+      y: 280,
+      duration: 200,
+      ease: 'Bounce.easeOut',
     });
   }
 
-  private updateCharacterText(): void {
-    this.characterText.setText(`> ${this.characters[this.selectedCharacterIndex]} <`);
-    this.characterText.setScale(1.2);
-    this.tweens.add({ targets: this.characterText, scale: 1.0, duration: 150, ease: 'Back.easeOut' });
-  }
 
   private flashText(message: string, yOffset: number): void {
     // Changed to 400
@@ -187,7 +281,8 @@ export class MainMenu extends Phaser.Scene {
   private showCredits(): void {
     // Changed 1024x768 to 800x600
     const overlay = this.add.rectangle(400, 300, 800, 600, 0x000000, 0.8).setInteractive();
-    const creditsText = this.add.text(400, 300, "CREATED BY: YOU\n\nART: NINJA ADVENTURE PACK\nENGINE: PHASER 3\n\nPress anywhere to close", { fontSize: '24px', align: 'center', color: '#48cae4', fontFamily: 'monospace' }).setOrigin(0.5);
+    const creditsText = this.add.text(400, 300, "CREATED BY: YOU\n\nART: NINJA ADVENTURE PACK\nENGINE: PHASER 3\n\nPress anywhere to close",
+  { fontSize: '24px', align: 'center', color: '#48cae4', fontFamily: 'monospace' }).setOrigin(0.5);
     overlay.on('pointerdown', () => { overlay.destroy(); creditsText.destroy(); });
   }
 }
