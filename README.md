@@ -1,9 +1,8 @@
 # **⚔️ Blade of the Summit ⚔️** 
 > "Throughout heaven and earth, I alone making this game."
 
-![alt text](image/DAY6.png)
-![alt text](<image/game perview.gif>)
 
+![alt text](image/Day9.gif)
 
 ```text
 Inspired by demon slayer to make this 2D action adventure built with phaser 3 + typescript. 
@@ -16,7 +15,7 @@ Fight powerful enemies, master combat, climb to the summit one map at a time.
 **Built for Terra Hack Cloud — 12 Week Challenge**  
 Made by **GYSK-KRISH**
 
->Current Day: 8 / 84
+>Current Day: 9 / 84
 ---
 # 🪄 Features 
 
@@ -131,7 +130,7 @@ Blade-of-the-Summit/
 
 ### Week 2
 - **Day 8** —  Fix MainMenu character selector , visible names and texture keys ✅
-- **Day 9** — 
+- **Day 9** —  I have rewrote level0 completely also added NPCs, HUD, lighting, procedural , forest density, river blockers ,smoke from chimneys,torii gates walk 
 - **Day 10** — 
 - **Day 11** — 
 - **Day 12** — 
@@ -250,8 +249,8 @@ Blade-of-the-Summit/
 
 ---
 
-**Current Status:** Day 7 complete  
-**Next Up:** Day 8
+**Current Status:** Day 9 complete  
+**Next Up:** Day 10
 
 ---
 
