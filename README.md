@@ -15,7 +15,7 @@ Fight powerful enemies, master combat, climb to the summit one map at a time.
 **Built for Terra Hack Cloud — 12 Week Challenge**  
 Made by **GYSK-KRISH**
 
->Current Day: 9 / 84
+>Current Day: 10 / 84
 ---
 # 🪄 Features 
 
@@ -249,8 +249,8 @@ Blade-of-the-Summit/
 
 ---
 
-**Current Status:** Day 9 complete  
-**Next Up:** Day 10
+**Current Status:** Day 10 complete  
+**Next Up:** Day 11
 
 ---
 
