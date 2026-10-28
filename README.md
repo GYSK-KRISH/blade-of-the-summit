@@ -131,7 +131,7 @@ Blade-of-the-Summit/
 ### Week 2
 - **Day 8** —  Fix MainMenu character selector , visible names and texture keys ✅
 - **Day 9** —  I have rewrote level0 completely also added NPCs, HUD, lighting, procedural , forest density, river blockers ,smoke from chimneys,torii gates walk 
-- **Day 10** — 
+- **Day 10** — making story 
 - **Day 11** — 
 - **Day 12** — 
 - **Day 13** — 
