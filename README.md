@@ -16,6 +16,8 @@ Fight powerful enemies, master combat, climb to the summit one map at a time.
 Made by **GYSK-KRISH**
 
 >Current Day: 11 / 84
+
+
 ---
 # 🪄 Features 
 
@@ -131,9 +133,13 @@ Blade-of-the-Summit/
 
 ### Week 2
 - **Day 8** —  Fix MainMenu character selector , visible names and texture keys ✅
+
 - **Day 9** —  Rewrote level0 completely also added NPCs, HUD, lighting, procedural , forest density, river blockers ,smoke from chimneys,torii gates walk ✅
 - **Day 10** — GameState and added into Level0_SnowVillage ✅
 - **Day 11** — Interaction manager and guide arrow are working ✅
+- **Day 9** —  I have rewrote level0 completely also added NPCs, HUD, lighting, procedural , forest density, river blockers ,smoke from chimneys,torii gates walk 
+- **Day 10** — GameState (single source of truth: quests, journal, flags, tutorial, guide-arrow query) + wired into Level0 + InteractionManager stub ✅
+- **Day 11** — 
 - **Day 12** — 
 - **Day 13** — 
 - **Day 14** — 
@@ -250,6 +256,7 @@ Blade-of-the-Summit/
 
 ---
 
+
 **Current Status:** Day 11 complete  
 **Next Up:** Day 12 
 
@@ -273,6 +280,7 @@ Blade-of-the-Summit/
 
 ---
 
+
 ## License
 
-Hackatime is licensed under the [MIT License.](LICENSE) Go wild!
+licensed under the [MIT License.](LICENSE) Go wild!
