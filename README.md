@@ -15,7 +15,7 @@ Fight powerful enemies, master combat, climb to the summit one map at a time.
 **Built for Terra Hack Cloud — 12 Week Challenge**  
 Made by **GYSK-KRISH**
 
->Current Day: 9 / 84
+>Current Day: 11 / 84
 ---
 # 🪄 Features 
 
@@ -77,6 +77,13 @@ Blade-of-the-Summit/
 │   │   ├── Level0_SnowVillage.ts
 │   │   ├── LevelComplete.ts   #not start yet
 │   │   └── MainMenu.ts
+|   ├── system/
+|   |   ├── GameState.ts
+|   |   ├── IntersectionMangement.ts
+|   |   ├── GuideArrow.ts
+|   |   ├── 
+|   |   └──
+|   |
 │   ├── types/
 │   │   └── index.ts
 │   └── main.ts
@@ -120,19 +127,13 @@ Blade-of-the-Summit/
 - **Day 6** — Making new house,add lanterns and sloving some bugs ✅
 - **Day 7** — Writing Readme file ✅
 
-
-### Next up
-- Hook the `Player` attack into Level 0
-- Enemy and health
-- Shrine objective trigger
-- Maybe Start Level 1
 ---
 
 ### Week 2
 - **Day 8** —  Fix MainMenu character selector , visible names and texture keys ✅
-- **Day 9** —  I have rewrote level0 completely also added NPCs, HUD, lighting, procedural , forest density, river blockers ,smoke from chimneys,torii gates walk 
-- **Day 10** — making story 
-- **Day 11** — 
+- **Day 9** —  Rewrote level0 completely also added NPCs, HUD, lighting, procedural , forest density, river blockers ,smoke from chimneys,torii gates walk ✅
+- **Day 10** — GameState and added into Level0_SnowVillage ✅
+- **Day 11** — Interaction manager and guide arrow are working ✅
 - **Day 12** — 
 - **Day 13** — 
 - **Day 14** — 
@@ -249,8 +250,8 @@ Blade-of-the-Summit/
 
 ---
 
-**Current Status:** Day 9 complete  
-**Next Up:** Day 10
+**Current Status:** Day 11 complete  
+**Next Up:** Day 12 
 
 ---
 
@@ -259,15 +260,19 @@ Blade-of-the-Summit/
 >- Sprites and tilesets: [**Ninja Adventure Asset Pack**](https://pixel-boy.itch.io/ninja-adventure-asset-pack)
 >- Engine: [Phaser 3](https://phaser.io/)
 >- **YouTube Channels I Learn From :**
->1. [Phaser](https://www.youtube.com/@PhaserYouTube)
->2. [Apan college](https://www.youtube.com/@ApnaCollegeOfficial)
->3. [JSLegendDev](https://www.youtube.com/@JSLegendDev)
->4. [Game Maker's Toolkit](https://www.youtube.com/@GMTK)
->5. [Brackeys](https://www.youtube.com/@Brackeys) 
->6. [Dani](https://www.youtube.com/@danidev) 
->7. [Sebastian Lague](https://www.youtube.com/@SebastianLague)
->8. [HeartBeast](https://www.youtube.com/@uheartbeast)
->9. [freeCodeCamp.org](https://www.youtube.com/@freecodecamp) 
+>1.  [Phaser](https://www.youtube.com/@PhaserYouTube)
+>2.  [Apan college](https://www.youtube.com/@ApnaCollegeOfficial)
+>3.  [JSLegendDev](https://www.youtube.com/@JSLegendDev)
+>4.  [Game Maker's Toolkit](https://www.youtube.com/@GMTK)
+>5.  [Brackeys](https://www.youtube.com/@Brackeys) 
+>6.  [Dani](https://www.youtube.com/@danidev) 
+>7.  [Sebastian Lague](https://www.youtube.com/@SebastianLague)
+>8.  [HeartBeast](https://www.youtube.com/@uheartbeast)
+>9.  [freeCodeCamp.org](https://www.youtube.com/@freecodecamp) 
 >10. [Power of Knowledge](https://www.youtube.com/@PowerofKnowledge)
 
 ---
+
+## License
+
+Hackatime is licensed under the [MIT License.](LICENSE) Go wild!
