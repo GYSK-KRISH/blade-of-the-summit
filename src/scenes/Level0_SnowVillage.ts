@@ -1,4 +1,7 @@
 import Phaser from 'phaser';
+import { GameState } from '../systems/GameState';  
+import { InteractionManager } from '../systems/InteractionManager';
+import { GuideArrow } from '../systems/GuideArrow';
 
 /* -----------------------------------------------------------
  *  Level0 — Snow Village
@@ -14,6 +17,10 @@ import Phaser from 'phaser';
  * handles flipX for left/right (the pack doesn't ship a true
  * side-profile walk, so we mirror the down-facing frames —
  * details in BootScene.makeAnimations).
+ * 
+ * 
+ * 
+ * TODO : list at 149 work on dialogue system 
  * ----------------------------------------------------------- */
 
 
@@ -56,7 +63,8 @@ export class Level0_SnowVillage extends Phaser.Scene {
   private solids: Phaser.GameObjects.Zone[] = [];    
   private tileLayer!: Phaser.Tilemaps.TilemapLayer;  
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
-  private wasd!: any;                                
+  private wasd!: any;
+  private gs!: GameState;                            
 
   // world state
   private grid: number[][] = [];
@@ -73,6 +81,10 @@ export class Level0_SnowVillage extends Phaser.Scene {
   private objectiveText!: Phaser.GameObjects.Text;
   private locationText!: Phaser.GameObjects.Text;
 
+
+  // class fields
+  private interactions!: InteractionManager;
+  private guide!: GuideArrow;
 
   //area names for the HUD label
   private readonly areas: Area[] = [
@@ -95,6 +107,7 @@ export class Level0_SnowVillage extends Phaser.Scene {
   }
 
   create(): void {
+    this.gs = GameState.fromRegistry(this);
   
     //1.bounds
     // Set world bounds FIRST. If you forget this, the player falls off
@@ -179,7 +192,17 @@ export class Level0_SnowVillage extends Phaser.Scene {
     this.createHUD();
     this.createAtmosphere();
     this.createChimneySmoke();
+
+   // 10. interaction + guide 
+    this.interactions = new InteractionManager(
+        this,
+        () => this.player,
+        () => false,   // TODO tomorrow: () => this.dialogue.isOpen()
+    );
+    this.guide = new GuideArrow(this, this.gs, () => this.player);
+
   }
+
 
   update(): void {
     const speed = PLAYER_SPEED;
@@ -228,6 +251,8 @@ export class Level0_SnowVillage extends Phaser.Scene {
     this.player.setDepth(this.player.y + 4);
     for (const npc of this.npcs) npc.setDepth(npc.y + 4);
     this.updateLocationLabel();
+    this.interactions?.update();
+    this.guide?.update();
 
   }
     
@@ -438,7 +463,7 @@ export class Level0_SnowVillage extends Phaser.Scene {
     //10.bridges
     for (const b of this.bridges) {
 
-      // bridge texture is N-S rotate 90 and stretch to span 5 tiles
+    // bridge texture is N-S rotate 90 and stretch to span 5 tiles
       this.add
         .image((b.c + 0.5) * TILE_SIZE, (b.r + 0.5) * TILE_SIZE, 'bridge')
         .setAngle(90)
@@ -447,22 +472,16 @@ export class Level0_SnowVillage extends Phaser.Scene {
     }
 
    // 11. stone lanterns with point lights
-for (let r = 28; r <= 110; r += 8) {
-  if ((r > 34 && r < 58) || (r > 62 && r < 82)) continue;
-  this.addProp('stone_lantern', ROAD_X - 4.5, r, { bw: 8, bh: 8, by: 2 });
-  this.addProp('stone_lantern', ROAD_X + 4.5, r, { bw: 8, bh: 8, by: 2 });
+    for (let r = 28; r <= 110; r += 8) {
+    if ((r > 34 && r < 58) || (r > 62 && r < 82)) continue;
+    this.addProp('stone_lantern', ROAD_X - 4.5, r, { bw: 8, bh: 8, by: 2 });
+    this.addProp('stone_lantern', ROAD_X + 4.5, r, { bw: 8, bh: 8, by: 2 });
 
-  this.lights.addLight(
-    (ROAD_X - 4.5) * TILE_SIZE, r * TILE_SIZE - 8,36,0xffd27a,0.16,);
-  this.lights.addLight(
-    (ROAD_X + 4.5) * TILE_SIZE, r * TILE_SIZE - 8,36,0xffd27a,0.16,);
-}
-
-
-
-
-
-
+    this.lights.addLight(
+      (ROAD_X - 4.5) * TILE_SIZE, r * TILE_SIZE - 8,36,0xffd27a,0.16,);
+    this.lights.addLight(
+      (ROAD_X + 4.5) * TILE_SIZE, r * TILE_SIZE - 8,36,0xffd27a,0.16,);
+    }
 
     // 12.rock
     for (const [x, y] of [[28, 30], [90, 28], [96, 90], [24, 92], [74, 60], [44, 62]]) {
