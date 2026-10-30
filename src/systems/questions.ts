@@ -1,4 +1,4 @@
-import type { Question } from '../systems/GameState';
+import type { Question } from './GameState';
 
 export const QUEST_MAIN_1: Omit<Question, 'status'> = {
     id: 'main_1',
