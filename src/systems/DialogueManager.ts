@@ -28,7 +28,7 @@ export interface DialogueNode {
     id : string;
     speaker : string;
     title: string;
-    text : string :
+    text : string ;
     visibleIf? : (gs: GameState) => boolean;
     fallback? : string;
     next? : string;
