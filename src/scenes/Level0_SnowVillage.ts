@@ -2,6 +2,8 @@ import Phaser from 'phaser';
 import { GameState } from '../systems/GameState';  
 import { InteractionManager } from '../systems/InteractionManager';
 import { GuideArrow } from '../systems/GuideArrow';
+import { DialogueManager } from '../systems/DialogueManager';
+
 
 /* -----------------------------------------------------------
  *  Level0 — Snow Village
