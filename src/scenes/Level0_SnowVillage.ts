@@ -5,6 +5,8 @@ import { GuideArrow } from '../systems/GuideArrow';
 import { DialogueManager } from '../systems/DialogueManager';
 
 
+
+
 /* -----------------------------------------------------------
  *  Level0 — Snow Village
  *
@@ -87,7 +89,7 @@ export class Level0_SnowVillage extends Phaser.Scene {
   // class fields
   private interactions!: InteractionManager;
   private guide!: GuideArrow;
-
+  private dialogue!: DialogueManager;
   //area names for the HUD label
   private readonly areas: Area[] = [
     { name: 'North Gate',            cx: 58, cy: 10,  r: 7  },
@@ -110,6 +112,7 @@ export class Level0_SnowVillage extends Phaser.Scene {
 
   create(): void {
     this.gs = GameState.fromRegistry(this);
+    this.input.keyboard!.on('keydown-E', () => console.log('E pressed at', this.time.now));
   
     //1.bounds
     // Set world bounds FIRST. If you forget this, the player falls off
@@ -170,6 +173,7 @@ export class Level0_SnowVillage extends Phaser.Scene {
 
      // 6. NPCs
     this.spawnNPCs();
+
   
     
     // 7.CAMERA
@@ -196,13 +200,37 @@ export class Level0_SnowVillage extends Phaser.Scene {
     this.createChimneySmoke();
 
    // 10. interaction + guide 
+    this.dialogue = new DialogueManager(this, this.gs);
+
     this.interactions = new InteractionManager(
         this,
         () => this.player,
-        () => false,   // TODO tomorrow: () => this.dialogue.isOpen()
-    );
-    this.guide = new GuideArrow(this, this.gs, () => this.player);
+        () => this.dialogue?.isOpen() ?? false, 
 
+    );
+    //this.guide = new GuideArrow(this, this.player, this.interactions);
+
+    // hide the E prompt the instant dialogue opens
+    // and reset the debounce when it closes so the first
+    // post dialogue E is not swallow .
+
+    this.events.on('dialogue-opened', () => {
+        this.interactions.hidePrompt();                      
+    });
+    this.events.on('dialogue-closed', () => {
+        this.interactions.resetCooldown();                    
+    });
+
+    // clean up listeners when this scene shuts down
+    // without this restarting Level0 stacks listeners forever .
+    
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      this.events.off('dialogue-opened');
+      this.events.off('dialogue-closed');
+      this.interactions.destroy();
+      this.dialogue.destroy();
+      this.guide.destroy();
+    });
   }
 
 
@@ -255,6 +283,7 @@ export class Level0_SnowVillage extends Phaser.Scene {
     this.updateLocationLabel();
     this.interactions?.update();
     this.guide?.update();
+    this.dialogue?.update();
 
   }
     
@@ -697,6 +726,19 @@ this.reserve(cx, cy, rad);
     npc.setFlipX(vx < 0);
     if (this.anims.exists(key)) npc.anims.play(key, true);
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   //______________________________________________________
   //  HUD + ATMOSPHERE — the vibes layer

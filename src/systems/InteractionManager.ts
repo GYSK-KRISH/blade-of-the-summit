@@ -30,7 +30,8 @@ export class InteractionManager {
     private list: Interactable[] = [];
     private current: Interactable | null = null;
     private prompt: Phaser.GameObjects.Text;
-    private keyE: Phaser.Input.Keyboard.Key;
+    //private keyE: Phaser.Input.Keyboard.Key;
+    private lastPressAt = new Map<string, number>(); 
     private cooldownUntil = 0;
 
     constructor(
@@ -53,8 +54,10 @@ export class InteractionManager {
             .setVisible(false);
 
     
-        this.keyE = scene.input.keyboard!.addKey('E');
-        this.keyE.on('down', () => this.tryInteract());
+        //this.keyE = scene.input.keyboard!.addKey('E');
+        //this.keyE.on('down', () => this.tryInteract());
+        scene.input.keyboard!.on('keydown-E', this.tryInteract, this);
+        
     }
 
     // -------------------------------
@@ -114,25 +117,46 @@ export class InteractionManager {
     // -------------------------------
     // PRESS E
     // -------------------------------
-    private tryInteract() {
+       private tryInteract() {
         if (this.isBlocked()) return;
         if (!this.current) return;
-
-        // 200ms debounce. keyboards double-fire. 
-
-        if (this.scene.time.now < this.cooldownUntil) return;
-        this.cooldownUntil = this.scene.time.now + 200;
+        
+        const now = this.scene.time.now;
+        const last = this.lastPressAt.get(this.current.id) ?? 0;
+        if (now - last < 200) return;           // per-interactable debounce
+        this.lastPressAt.set(this.current.id, now);
 
         this.current.onInteract();
     }
 
     // -------------------------------
-    // CLEANUP
+    // COOLDOWN RESET
     // -------------------------------
-    // call from scene shutdown. otherwise key binding leaks into
-    // other scenes and E starts firing the wrong manager. fun.
+    // called when dialogue closes, so the first E after dialogue
+    // isn't swallowed by the 200ms debounce from the press that
+    // opened the dialogue in the first place.
+    resetCooldown() {
+        this.cooldownUntil = 0;
+        this.lastPressAt.clear();
+    }
+
+        // -------------------------------
+    // PROMPT VISIBILITY
+    // -------------------------------
+    // called by Level0 when dialogue opens. we can't wait for the
+    // next update() tick because the dialogue panel draws on top
+    // and a stale prompt would peek out from behind it.
+    hidePrompt() {
+        this.current = null;
+        this.prompt.setVisible(false);
+    }   
+
+
+    // -------------------------------
+    // PROMPT POSITIONING
+    // -------------------------------
     destroy() {
-        this.keyE.removeAllListeners();
+        this.scene.input.keyboard!.off('keydown-E', this.tryInteract, this);
         this.prompt.destroy();
     }
 }
