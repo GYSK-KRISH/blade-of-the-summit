@@ -15,7 +15,7 @@ Fight powerful enemies, master combat, climb to the summit one map at a time.
 **Built for Terra Hack Cloud — 12 Week Challenge**  
 Made by **GYSK-KRISH**
 
->Current Day: 12 / 84
+>Current Day: 13 / 84
 
 
 ---
@@ -137,11 +137,11 @@ Blade-of-the-Summit/
 - **Day 9** —  Rewrote level0 completely also added NPCs, HUD, lighting, procedural , forest density, river blockers ,smoke from chimneys,torii gates walk ✅
 - **Day 10** — GameState and added into Level0_SnowVillage ✅
 - **Day 11** — Interaction manager and guide arrow are working ✅
-- **Day 9** —  I have rewrote level0 completely also added NPCs, HUD, lighting, procedural , forest density, river blockers ,smoke from chimneys,torii gates walk 
+- **Day 9** —  I have rewrote level0 completely also added NPCs, HUD, lighting, procedural , forest density, river blockers ,smoke from chimneys,torii gates walk ✅
 - **Day 10** — GameState (single source of truth: quests, journal, flags, tutorial, guide-arrow query) + wired into Level0 + InteractionManager stub ✅
-- **Day 11** — Adding questions file and dialogue file for real question ask and hint for real game feel
-- **Day 12** — 
-- **Day 13** — 
+- **Day 11** — InteractionManager and GuideArrow wired, E works ✅
+- **Day 12** — Adding questions file and dialogue file for real question ask and hint for real game feel ✅
+- **Day 13** — Connect dialogue system into Level0 add InteractionManager cooldown + prompt hooks instantiate DialogueManager connect isBlocked to dialogue ✅
 - **Day 14** — 
 
 ---
@@ -257,8 +257,8 @@ Blade-of-the-Summit/
 ---
 
 
-**Current Status:** Day 12 complete  
-**Next Up:** Day 13 
+**Current Status:** Day 13 complete  
+**Next Up:** Day 14
 
 ---
 
