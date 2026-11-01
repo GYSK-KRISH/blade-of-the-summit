@@ -3,9 +3,8 @@ import { GameState } from '../systems/GameState';
 import { InteractionManager } from '../systems/InteractionManager';
 import { GuideArrow } from '../systems/GuideArrow';
 import { DialogueManager } from '../systems/DialogueManager';
-
-
-
+import { ELDER_SCRIPT } from '../systems/dialogue';
+import { QUEST_MAIN_1 } from '../systems/questions';
 
 /* -----------------------------------------------------------
  *  Level0 — Snow Village
@@ -112,7 +111,6 @@ export class Level0_SnowVillage extends Phaser.Scene {
 
   create(): void {
     this.gs = GameState.fromRegistry(this);
-    this.input.keyboard!.on('keydown-E', () => console.log('E pressed at', this.time.now));
   
     //1.bounds
     // Set world bounds FIRST. If you forget this, the player falls off
@@ -208,7 +206,7 @@ export class Level0_SnowVillage extends Phaser.Scene {
         () => this.dialogue?.isOpen() ?? false, 
 
     );
-    //this.guide = new GuideArrow(this, this.player, this.interactions);
+    this.guide = new GuideArrow(this, this.gs, () => this.player);
 
     // hide the E prompt the instant dialogue opens
     // and reset the debounce when it closes so the first
@@ -221,6 +219,10 @@ export class Level0_SnowVillage extends Phaser.Scene {
         this.interactions.resetCooldown();                    
     });
 
+    // 11. quest NPCs — must come AFTER this.interactions exists
+    this.addElder();
+    this.addSmithy();
+
     // clean up listeners when this scene shuts down
     // without this restarting Level0 stacks listeners forever .
     
@@ -228,8 +230,8 @@ export class Level0_SnowVillage extends Phaser.Scene {
       this.events.off('dialogue-opened');
       this.events.off('dialogue-closed');
       this.interactions.destroy();
-      this.dialogue.destroy();
-      this.guide.destroy();
+      this.dialogue?.destroy();
+      this.guide?.destroy();
     });
   }
 
@@ -727,18 +729,90 @@ this.reserve(cx, cy, rad);
     if (this.anims.exists(key)) npc.anims.play(key, true);
   }
 
+  //______________________________________________________ 
+  // ELDER — quest 
+  //______________________________________________________ 
+
+  private addElder(): void {
+    // spawn just south of the Elder's House 
+
+    const tx = 67;
+    const ty = 93;
+    const x = tx * TILE_SIZE + 8;
+    const y = ty * TILE_SIZE + 8;
+
+    const elder = this.physics.add.sprite(x, y, 'samurai-walk', 0);
+    elder.setSize(8, 8).setOffset(4, 8);
+    elder.setTint(0xffe0a0);           // warm gold — stands out from crowd
+    elder.setDepth(y + 4);
+    elder.anims.play('samurai-walk-down');
+    this.addCollisions(elder);
+    this.npcs.push(elder);
+
+    // register interactable
+    this.interactions.register({
+      id: 'elder_kaen',
+      getPosition: () => ({ x: elder.x, y: elder.y }),
+      radius: 40,                      // ~2.5 tiles
+      priority: 100,                   // beats doors/signs nearby
+      prompt: () => 'Talk to Elder Kaen',
+      canInteract: () => !this.dialogue.isOpen(),
+      onInteract: () => {
+        this.dialogue.start(ELDER_SCRIPT);
+      },
+    });
+
+    // guide arrow targets
+    const elderPos = () => ({ x: elder.x, y: elder.y });
+    this.guide.registerTarget('main_1', 'speak_elder',  elderPos);
+    this.guide.registerTarget('main_1', 'return_elder', elderPos);
+  }
 
 
+  //______________________________________________________
+   // SMITHY — objective
+  //______________________________________________________ 
 
+  private addSmithy(): void {
+    const x = 86 * TILE_SIZE + 8;
+    const y = 47 * TILE_SIZE + 8;
 
+    this.interactions.register({
+      id: 'smithy',
+      getPosition: () => ({ x, y }),
+      radius: 44,
+      priority: 50,
+      prompt: () => 'Inspect the smithy',
+      canInteract: () => {
+        if (this.dialogue.isOpen()) return false;
+        const q = this.gs.question(QUEST_MAIN_1.id);
+        if (!q || q.status !== 'active') return false;
+        const obj = q.objectives.find(o => o.id === 'inspect_smithy');
+        return !!obj && !obj.done;
+      },
 
+      onInteract: () => {
+        this.gs.addObjective(QUEST_MAIN_1.id, 'inspect_smithy', {
+          id: 'inspect_smithy',
+          description: 'Investigate the smithy',
+          done: true,
+        });
 
+        this.gs.addJournal({
+          id: 'j_smithy_clue',
+          title: "Toma's Warning",
+          body:
+            "Found a scrap of paper in Toma's forge. Handwriting reads: " +
+            '"They came from the shrine. Do not ring the bell." ' +
+            'The Elder needs to see this.',
+          date: new Date().toISOString().slice(0, 10),
+          kind: 'clue',
+        });
+      },
+    });
 
-
-
-
-
-
+    this.guide.registerTarget('main_1', 'inspect_smithy', () => ({ x, y }));
+  }
 
   //______________________________________________________
   //  HUD + ATMOSPHERE — the vibes layer

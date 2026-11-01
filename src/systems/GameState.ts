@@ -121,13 +121,29 @@ export class GameState extends Phaser.Events.EventEmitter {
         const q = this.data.questions[questionId];
         if (!q) 
             return;
-        const obj = q.objectives.find(o => o.id === objId);
-        if (!obj || obj.done) return; // idempotent. click twice? nothing happens.
-        obj.done = true;
+
+        const existing= q.objectives.find(o => o.id === objId);
+
+        
+        // already done → nothing to do
+        if (existing?.done) return;
+        
+        
+        // exists but pending → respect the incoming `done` flag
+        if (existing) {
+            if (!objective.done)
+                return;
+            existing.done = true;
+
+        }else {
+            q.objectives.push({ ...objective });
+
+        }
+
         this.emit('changed', { type: 'objective-done', questionId: questionId, objId });
         if (q.objectives.every(o => o.done)) {
-        q.status = 'completed';
-        this.emit('changed', { type: 'question-completed', id: questionId });
+            q.status = 'completed';
+            this.emit('changed', { type: 'question-completed', id: questionId });
         }
     }
 

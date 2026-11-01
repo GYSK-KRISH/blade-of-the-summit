@@ -111,8 +111,10 @@ export class GuideArrow {
         //5.world screen-space
         // multiply by zoom because scrollFactor(0) still gets zoomed.
         // forget this arrow is 3px tall on your first playtest 💀
+        const kx = (ax - cam.scrollX) * zoom;
+        const ky = (ay - cam.scrollY) * zoom;
         this.arrow
-            .setPosition(ax * zoom, ay * zoom)
+            .setPosition(kx, ky)
             .setScale(1 / zoom)
             .setRotation(angle + Math.PI / 2)
             .setVisible(true);
@@ -123,7 +125,7 @@ export class GuideArrow {
         this.distText
             .setText(`${dist}m`)
             .setScale(1 / zoom)
-            .setPosition(ax * zoom, (ay + 12) * zoom)
+            .setPosition(kx,(ky + 12) * zoom)
             .setVisible(true);
     }
 

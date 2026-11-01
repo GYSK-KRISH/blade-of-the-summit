@@ -28,7 +28,7 @@ export const ELDER_SCRIPT: DialogueScript = {
     nodes: {
         first_meet: {
             id: 'first_meet',
-            speaker: 'Elder',
+            speaker: 'Elder Kaen',
             title: 'Village Elder',
             text: 'Hey. Hold up. You are not from here, are you.',
             next: 'first_meet_2',
@@ -36,14 +36,14 @@ export const ELDER_SCRIPT: DialogueScript = {
 
         first_meet_2: {
             id: 'first_meet_2',
-            speaker: 'Elder',
+            speaker: 'Elder Kaen',
             text: 'Six nights. Six nights ago, four of ours just... vanished. No blood. No tracks. Nothing. Just these weird marks in the snow, and a bell ringing somewhere past the shrine.',
             next: 'first_meet_3',
         },
 
         first_meet_3: {
             id: 'first_meet_3',
-            speaker: 'Elder ',
+            speaker: 'Elder Kaen',
             text: 'Look, kid. I have watched this mountain take too many people. I am not losing anyone else.',
             choices: [
                 {
@@ -122,7 +122,7 @@ export const ELDER_SCRIPT: DialogueScript = {
                     {
                         id: 'return_elder',
                         description: 'Take Toma\'s note to Elder Kaen.',
-                        done: false,
+                        done:true ,
                     }
                 );
 

@@ -15,7 +15,7 @@ Fight powerful enemies, master combat, climb to the summit one map at a time.
 **Built for Terra Hack Cloud — 12 Week Challenge**  
 Made by **GYSK-KRISH**
 
->Current Day: 13 / 84
+>Current Day: 14 / 84
 
 
 ---
@@ -80,22 +80,25 @@ Blade-of-the-Summit/
 │   │   ├── LevelComplete.ts   #not start yet
 │   │   └── MainMenu.ts
 |   ├── system/
+|   |   ├── Dialogue.ts 
+|   |   ├── DialogueManager.ts
 |   |   ├── GameState.ts
-|   |   ├── IntersectionMangement.ts
-|   |   ├── GuideArrow.ts
-|   |   ├── 
-|   |   └──
+|   |   ├── GuideArrow.ts 
+│   │   ├── InteractionManager.ts
+|   |   └──questions.ts
 |   |
 │   ├── types/
 │   │   └── index.ts
 │   └── main.ts
 ├── .gitignore
 ├── index.html
+├── LICENSE
 ├── package-lock.json
 ├── package.json
 ├── README.md
 ├── tsconfig.json
 └── vite.config.ts
+
 ```
 
 ---
@@ -133,7 +136,6 @@ Blade-of-the-Summit/
 
 ### Week 2
 - **Day 8** —  Fix MainMenu character selector , visible names and texture keys ✅
-
 - **Day 9** —  Rewrote level0 completely also added NPCs, HUD, lighting, procedural , forest density, river blockers ,smoke from chimneys,torii gates walk ✅
 - **Day 10** — GameState and added into Level0_SnowVillage ✅
 - **Day 11** — Interaction manager and guide arrow are working ✅
@@ -142,7 +144,7 @@ Blade-of-the-Summit/
 - **Day 11** — InteractionManager and GuideArrow wired, E works ✅
 - **Day 12** — Adding questions file and dialogue file for real question ask and hint for real game feel ✅
 - **Day 13** — Connect dialogue system into Level0 add InteractionManager cooldown + prompt hooks instantiate DialogueManager connect isBlocked to dialogue ✅
-- **Day 14** — 
+- **Day 14** — Finished main_1 quest loop, fixed state logic and connect dialogue UI ✅
 
 ---
 

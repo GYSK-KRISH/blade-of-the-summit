@@ -137,7 +137,10 @@ class DialogueUI {
     }
 
     reposition(cam: Phaser.Cameras.Scene2D.Camera) {
-        this.container.setPosition(cam.scrollX + cam.worldView.width / 2, cam.scrollY + cam.worldView.height).setScale(1 / cam.zoom);
+        this.container.setPosition(
+        this.scene.scale.width / 2 / cam.zoom, 
+        this.scene.scale.height / cam.zoom
+        ).setScale(1 / cam.zoom);
     }
 }
 
@@ -255,12 +258,13 @@ export class DialogueManager {
     }
 
     close() {
+        const wasActive = this.active;
         this.active = false;
         this.node = null;
         this.script = null;
         this.revealTimer?.remove();
         this.ui.hide();
-        //if (wasActive) this.scene.events.emit('dialogue-closed');
+        if (wasActive) this.scene.events.emit('dialogue-closed');
     }
 
     destroy() {
