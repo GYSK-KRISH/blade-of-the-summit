@@ -53,6 +53,7 @@ export interface GameStateData {
     flags: Record<string, boolean>;
     tutorialSteps: Record<string, boolean>;
     chapter: number;
+    health: number;
 }
 
 
@@ -64,6 +65,7 @@ const DEFAULT_STATE : GameStateData = {
     flags: {},
     tutorialSteps: {},
     chapter: 1,
+    health:100,
 }
 
 export class GameState extends Phaser.Events.EventEmitter {

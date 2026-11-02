@@ -15,7 +15,7 @@ Fight powerful enemies, master combat, climb to the summit one map at a time.
 **Built for Terra Hack Cloud — 12 Week Challenge**  
 Made by **GYSK-KRISH**
 
->Current Day: 14 / 84
+>Current Day: 15 / 84
 
 
 ---
@@ -149,7 +149,7 @@ Blade-of-the-Summit/
 ---
 
 ### Week 3
-- **Day 15** — 
+- **Day 15** — Added Enemy AI, Player Health tracking and fixed Torii Gate Z-index (>special thanks for this suggestion about torii gate ***skavvy skavvenger*** )
 - **Day 16** — 
 - **Day 17** — 
 - **Day 18** — 
@@ -259,8 +259,8 @@ Blade-of-the-Summit/
 ---
 
 
-**Current Status:** Day 13 complete  
-**Next Up:** Day 14
+**Current Status:** Day 15 complete  
+**Next Up:** Day 16
 
 ---
 

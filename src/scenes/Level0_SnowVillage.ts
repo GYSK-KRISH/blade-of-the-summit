@@ -5,6 +5,7 @@ import { GuideArrow } from '../systems/GuideArrow';
 import { DialogueManager } from '../systems/DialogueManager';
 import { ELDER_SCRIPT } from '../systems/dialogue';
 import { QUEST_MAIN_1 } from '../systems/questions';
+import { Enemy } from '../entities/Enemy';
 
 /* -----------------------------------------------------------
  *  Level0 — Snow Village
@@ -32,7 +33,7 @@ const MAP_WIDTH = 126;
 const MAP_HEIGHT = 126;
 const ROAD_X = 58; 
 const NPC_SPEED = 30;
-const PLAYER_SPEED = 800;
+const PLAYER_SPEED = 200;
 
 // Frame indices into the procedural 'tiles' spritesheet.
 // Order matches the order they were drawn in BootScene.makeTiles().
@@ -105,6 +106,9 @@ export class Level0_SnowVillage extends Phaser.Scene {
     { name: 'South Exit',            cx: 58, cy: 120, r: 7  },
   ];
 
+  //enemy demon
+  private enemies: Enemy[] =[];
+
   constructor() {
     super('Level0_SnowVillage');
   }
@@ -151,28 +155,16 @@ export class Level0_SnowVillage extends Phaser.Scene {
     this.player.setCollideWorldBounds(true);
     this.addCollisions(this.player);
 
-    
-
-    // 5. demo enemy
-    // Demo enemy. Just standing on the path so you can see it works.
-    // Not stored as a class field yet because there's no AI or combat
-    // system to hook it up to. Will get moved into a proper spawn
-    // function once enemies exist.
-    const red = this.physics.add.sprite(
-      ROAD_X  * TILE_SIZE,
-      60 * TILE_SIZE,
-      'ninja-red-walk',
-      0,
-    );
-    red.setSize(8, 8).setOffset(4, 8);
-    red.setDepth(red.y);
+    // 5. enemy
+        // 5. Enemies
+    const red = new Enemy(this, ROAD_X * TILE_SIZE, 60 * TILE_SIZE, 'ninja-red-walk');
     red.anims.play('ninja-red-walk-down');
-    this.addCollisions(red); 
+    this.addCollisions(red);
+    this.enemies.push(red);
 
      // 6. NPCs
     this.spawnNPCs();
 
-  
     
     // 7.CAMERA
     // Camera. 2x zoom because at 1x the 16px tiles are tiny. Lerp
@@ -286,6 +278,13 @@ export class Level0_SnowVillage extends Phaser.Scene {
     this.interactions?.update();
     this.guide?.update();
     this.dialogue?.update();
+
+
+    // Update Enemy AI
+    for (const enemy of this.enemies) {
+        enemy.setDepth(enemy.y + 4);
+        enemy.updateAI(this.player);
+    }
 
   }
     
@@ -621,7 +620,7 @@ this.reserve(cx, cy, rad);
     const a = x * TILE_SIZE;
     const b = y * TILE_SIZE;
     const gate = this.add.image(a, b, 'torii_gate').setScale(scale);
-    gate.setDepth(b + gate.displayHeight / 2);
+    gate.setDepth(b);
     for (const side of [-1, 1]) {
       this.addBlocker(
         a + side * 12 * scale,
