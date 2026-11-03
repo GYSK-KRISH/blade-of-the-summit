@@ -1,6 +1,11 @@
 import Phaser from 'phaser';
 
 export class Enemy extends Phaser.Physics.Arcade.Sprite{
+
+    //A. Add Health variable 
+
+    public hp: number = 5;
+
     constructor(scene: Phaser.Scene, x: number, y:number , texture: string) {
 
         // 1. CAll the parent constructor
@@ -13,9 +18,21 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite{
         // 3.set the hitbox 
         this.setSize(8, 8).setOffset(4, 8);
         this.setCollideWorldBounds(true);
+
+    }
+
+    //B. add damage
+    takeDamage() {
+        this.hp -= 1;
+        if (this.hp <= 0) {
+            this.destroy();
+        }
     }
 
     updateAI(target: Phaser.Physics.Arcade.Sprite) {
+        
+        //if enemy is already moving fast, don't update AI
+        if (this.body!.velocity.length() >100) return; 
         
         const speed = 100; 
 

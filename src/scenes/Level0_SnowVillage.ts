@@ -153,14 +153,39 @@ export class Level0_SnowVillage extends Phaser.Scene {
     // and it looks wrong.
     this.player.setSize(8, 8).setOffset(4, 8);
     this.player.setCollideWorldBounds(true);
+    //gojo intro text 
+    const introText = this.add.text(
+      this.cameras.main.width / 2,
+      this.cameras.main.height / 2,
+      "Welcome to the Snow Village! !\n\n Your journey begins here.!\n\n Go talk to Elder in (SOUTH-EAST direction)!\n\nMove: W, A, S, D\nInteract: E ", { 
+        fontSize: '20px',
+        fontFamily: 'monospace',
+        color: '#020202',
+        backgroundColor: '#b8d60dda',
+        align: 'center',
+        padding: { x: 20, y: 20 },
+      }
+    ).setOrigin(0.5).setScrollFactor(0).setDepth(20000);
+    
+    //fade out gojo intro text after 5 seconds
+    this.time.delayedCall(5000, () => {
+      this.tweens.add({
+        targets: introText,
+        alpha: 0,
+        duration: 1000,
+        onComplete: () => introText.destroy(),
+      });
+    });
+
     this.addCollisions(this.player);
 
-    // 5. enemy
-        // 5. Enemies
+      // 5. Enemies
     const red = new Enemy(this, ROAD_X * TILE_SIZE, 60 * TILE_SIZE, 'ninja-red-walk');
     red.anims.play('ninja-red-walk-down');
     this.addCollisions(red);
     this.enemies.push(red);
+
+
 
      // 6. NPCs
     this.spawnNPCs();
@@ -225,11 +250,36 @@ export class Level0_SnowVillage extends Phaser.Scene {
       this.dialogue?.destroy();
       this.guide?.destroy();
     });
-  }
+    
+    // 12. combat 
+    const spaceBar = this.input.keyboard!.addKey('SPACE');
 
+    spaceBar.on('down',() => {
+
+      //play the attack animation
+      this.player.anims.play('ninja-dark-attack-anim', true);
+    
+      //check all enemies to see i fthey are close to be hit 
+      for (const enemy of this.enemies) {
+        const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, enemy.x, enemy.y);
+        
+        if (dist < 40) {
+          // push back the enemy from player
+          const angle = Phaser.Math.Angle.Between(this.player.x, this.player.y, enemy.x, enemy.y);
+          enemy.setVelocity(Math.cos(angle) * 300 , Math.sin(angle) * 300);
+
+          //red effect
+          enemy.setTint(0xff0000);
+          enemy.takeDamage();
+          this.time.delayedCall(200 ,() => enemy.clearTint());
+        }
+      }
+    });
+  }
 
   update(): void {
     const speed = PLAYER_SPEED;
+
     this.player.setVelocity(0);
 
     // else-if chain rather than separate checks. If you check X and Y
@@ -754,7 +804,7 @@ this.reserve(cx, cy, rad);
       getPosition: () => ({ x: elder.x, y: elder.y }),
       radius: 40,                      // ~2.5 tiles
       priority: 100,                   // beats doors/signs nearby
-      prompt: () => 'Talk to Elder Kaen',
+      prompt: () => '[E] Talk to Elder Kaen',
       canInteract: () => !this.dialogue.isOpen(),
       onInteract: () => {
         this.dialogue.start(ELDER_SCRIPT);
@@ -781,7 +831,7 @@ this.reserve(cx, cy, rad);
       getPosition: () => ({ x, y }),
       radius: 44,
       priority: 50,
-      prompt: () => 'Inspect the smithy',
+      prompt: () => '[E] Inspect the smithy',
       canInteract: () => {
         if (this.dialogue.isOpen()) return false;
         const q = this.gs.question(QUEST_MAIN_1.id);
