@@ -281,6 +281,7 @@ export class BootScene extends Phaser.Scene {
     this.makeShrine();     
     this.makeJapaneseHouse();
     this.makeBridge();
+    this.makeLetter();
   }
 
   // ==========================================================
@@ -1336,5 +1337,24 @@ private makeHouse(): void {
     ctx.fillRect(70, 8, 8, 4);
 
     this.addImage('bridge', canvas);
+  }
+
+  private makeLetter(): void {
+    if(this.textures.exists('letter')) return;
+    const canvas = this.newCanvas(16, 16);
+    const ctx = this.ctxOf(canvas);
+
+    //parchment background
+    ctx.fillStyle = '#f0e0c2';
+    ctx.fillRect(0, 0, 16, 16);
+
+    //red wax seal
+    ctx.fillStyle = '#be2d34';
+    ctx.fillRect(7, 7, 2, 2);
+
+    //shadow 
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+    ctx.fillRect(2,12,12,2);
+    this.addImage('letter', canvas);
   }
 }

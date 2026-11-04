@@ -10,8 +10,8 @@ console.log("🔥 main.ts is running!");
 const GameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
   parent: 'game-container',
-  width: 800,       
-  height: 600,
+  width: '100%',       
+  height: '100%',
   pixelArt: true,   
   backgroundColor: '#0c0d12', 
 scale: {

@@ -59,35 +59,56 @@ class DialogueUI {
     private panelW: number;
     private panelH: number;
 
-    constructor(scene: Phaser.Scene) {
+        constructor(scene: Phaser.Scene) {
         this.scene = scene;
         this.panelW = Math.min(640, scene.scale.width * 0.85);
         this.panelH = 130;
 
-        this.container = scene.add.container(0, 0).setDepth(20_000).setVisible(false);
+        this.container = scene.add.container(0, 0).setDepth(20_000).setVisible(false).setScrollFactor(0);
         const panelY = -this.panelH - 10;
 
-        this.panel = scene.add.rectangle(0, panelY, this.panelW, this.panelH, 0x0a1420, 0.94)
-            .setOrigin(0.5, 0).setStrokeStyle(1, 0xbfe9ff, 0.7);
+        // 1. Outer Wooden Border (Dark Brown)
+        this.panel = scene.add.rectangle(0, panelY, this.panelW, this.panelH, 0x4e342e, 1)
+            .setOrigin(0.5, 0).setStrokeStyle(6, 0x2b1c13);
 
-        this.nameText = scene.add.text(-this.panelW / 2 + 12, panelY + 8, '', {
-            fontFamily: 'monospace', fontSize: '13px', color: '#ffe27a', fontStyle: 'bold',
-        });
+        // 2. Inner Parchment (Cream)
+        const innerPanel = scene.add.rectangle(0, panelY, this.panelW - 16, this.panelH - 16, 0xf2e8d5, 1)
+            .setOrigin(0.5, 0).setStrokeStyle(2, 0x8b6b4a);
 
-        this.titleText = scene.add.text(this.panelW / 2 - 12, panelY + 8, '', {
-            fontFamily: 'monospace', fontSize: '10px', color: '#8fa3bf',
+                // 3. Speaker Nameplate (Wooden Tag)
+        const nameBg = scene.add.rectangle(-this.panelW / 2 + 50, panelY - 12, 140, 28, 0x4e342e)
+            .setStrokeStyle(2, 0xb3242c); // Red border for anime flair
+            
+        this.nameText = scene.add.text(-this.panelW / 2 + 50, panelY - 12, '', {
+            fontFamily: 'sans-serif', // Clean font
+            fontSize: '16px', 
+            color: '#f2e8d5', // Cream text
+            fontStyle: 'bold',
+        }).setOrigin(0.5);
+
+        // 4. Title (Dark Grey, smaller)
+        this.titleText = scene.add.text(this.panelW / 2 - 20, panelY + 12, '', {
+            fontFamily: 'sans-serif', 
+            fontSize: '12px', 
+            color: '#5c677d',
         }).setOrigin(1, 0);
 
-        this.bodyText = scene.add.text(-this.panelW / 2 + 12, panelY + 30, '', {
-            fontFamily: 'monospace', fontSize: '11px', color: '#f4fcff',
-            wordWrap: { width: this.panelW - 24 }, lineSpacing: 3,
+        // 5. Body Text (Easy to read)
+        this.bodyText = scene.add.text(-this.panelW / 2 + 25, panelY + 40, '', {
+            fontFamily: 'sans-serif', // Clean font
+            fontSize: '15px',         // Bigger text
+            color: '#2b1c13',
+            wordWrap: { width: this.panelW - 50 }, 
+            lineSpacing: 8,           // More breathing room between lines
         });
 
-        this.hintText = scene.add.text(this.panelW / 2 - 12, panelY + this.panelH - 14, '▼ E', {
-            fontFamily: 'monospace', fontSize: '10px', color: '#ffe27a',
+        // 6. Hint Text (Dark Gold)
+        this.hintText = scene.add.text(this.panelW / 2 - 20, panelY + this.panelH - 14, '▼ [E] to continue', {
+            fontFamily: 'sans-serif', fontSize: '12px', color: '#a8823f',
         }).setOrigin(1, 0.5);
 
-        this.container.add([this.panel, this.nameText, this.titleText, this.bodyText, this.hintText]);
+        // 7. Add all to container
+        this.container.add([this.panel, innerPanel, nameBg, this.nameText, this.titleText, this.bodyText, this.hintText]);
     }
 
     show(speaker: string, title?: string) {
@@ -111,15 +132,15 @@ class DialogueUI {
         const baseY = panelY + 46;
 
         texts.forEach((t, i) => {
-            const label = this.scene.add.text(
+                const label = this.scene.add.text(
                 -this.panelW / 2 + 20, baseY + i * 16, `▸ ${i + 1}. ${t}`, {
-                    fontFamily: 'monospace', fontSize: '10px',
-                    color: '#bfe9ff', backgroundColor: '#1a2a3f', padding: { x: 4, y: 1 },
+                    fontFamily: 'monospace', fontSize: '12px',
+                    color: '#2b1c13', backgroundColor: '#e6d5b8', padding: { x: 6, y: 2 },
                 },
             ).setInteractive({ useHandCursor: true });
 
-            label.on('pointerover', () => label.setColor('#ffe27a'));
-            label.on('pointerout', () => label.setColor('#bfe9ff'));
+            label.on('pointerover', () => label.setColor('#b3242c')); // Red on hover
+            label.on('pointerout', () => label.setColor('#2b1c13'));  // Dark brown normal
             label.on('pointerdown', () => this.onChoicePick?.(i));
             this.choiceLabels.push(label);
             this.container.add(label);
@@ -137,13 +158,13 @@ class DialogueUI {
     }
 
     reposition(cam: Phaser.Cameras.Scene2D.Camera) {
+        // Lock to the exact center-bottom of the screen, no zoom math needed
         this.container.setPosition(
-        this.scene.scale.width / 2 / cam.zoom, 
-        this.scene.scale.height / cam.zoom
+            cam.centerX, 
+            cam.centerY + (this.scene.scale.height / 2 / cam.zoom)
         ).setScale(1 / cam.zoom);
     }
 }
-
 // 5. Manager
 export class DialogueManager {
     private ui: DialogueUI;
@@ -241,7 +262,7 @@ export class DialogueManager {
 
     private advanceOrSkip() {
         if (!this.active) return;
-        if (this.scene.time.now - this.openedAt < 80) return;
+        if (this.scene.time.now - this.openedAt < 300) return;
 
         if (this.typed.length < this.full.length) {
             this.typed = this.full;

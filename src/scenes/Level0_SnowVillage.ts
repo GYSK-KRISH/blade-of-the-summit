@@ -3,9 +3,10 @@ import { GameState } from '../systems/GameState';
 import { InteractionManager } from '../systems/InteractionManager';
 import { GuideArrow } from '../systems/GuideArrow';
 import { DialogueManager } from '../systems/DialogueManager';
-import { ELDER_SCRIPT } from '../systems/dialogue';
+import { ELDER_SCRIPT ,LETTER_SCRIPT } from '../systems/dialogue';
 import { QUEST_MAIN_1 } from '../systems/questions';
 import { Enemy } from '../entities/Enemy';
+
 
 /* -----------------------------------------------------------
  *  Level0 — Snow Village
@@ -155,8 +156,8 @@ export class Level0_SnowVillage extends Phaser.Scene {
     this.player.setCollideWorldBounds(true);
     //gojo intro text 
     const introText = this.add.text(
-      this.cameras.main.width / 2,
-      this.cameras.main.height / 2,
+      this.cameras.main.width / 2 / this.cameras.main.zoom ,
+      this.cameras.main.height / 2 / this.cameras.main.zoom,
       "Welcome to the Snow Village! !\n\n Your journey begins here.!\n\n Go talk to Elder in (SOUTH-EAST direction)!\n\nMove: W, A, S, D\nInteract: E ", { 
         fontSize: '20px',
         fontFamily: 'monospace',
@@ -165,7 +166,10 @@ export class Level0_SnowVillage extends Phaser.Scene {
         align: 'center',
         padding: { x: 20, y: 20 },
       }
-    ).setOrigin(0.5).setScrollFactor(0).setDepth(20000);
+    ).setOrigin(0.5)
+    .setScrollFactor(0)
+    .setDepth(20000)
+    .setScale(1 / this.cameras.main.zoom);
     
     //fade out gojo intro text after 5 seconds
     this.time.delayedCall(5000, () => {
@@ -240,6 +244,46 @@ export class Level0_SnowVillage extends Phaser.Scene {
     this.addElder();
     this.addSmithy();
 
+    // 12. mysterious letter box figth invitasion
+    const letterX =88* TILE_SIZE;
+    const letterY = 48* TILE_SIZE;
+
+    const letterSprite = this.add.image(letterX, letterY, 'letter');
+    letterSprite.setDepth(letterY);
+
+    // add animation float up and down
+    this.tweens.add({
+      targets: letterSprite,
+      y: letterY - 4,
+      duration: 800,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+    });
+
+    // Register it as an interactable
+    this.interactions.register({
+      id: 'mysterious_letter',
+      getPosition: () => ({ x: letterX, y: letterY }),
+      radius: 30,
+      priority: 60,
+      prompt: () => '[E] Read Letter',
+      canInteract: () => !this.dialogue.isOpen(),
+      onInteract: () => {
+        letterSprite.destroy(); // Remove it from the world
+        this.dialogue.start(LETTER_SCRIPT); // Read it
+
+        //adding journal 
+        this.gs.addJournal({
+          id: 'j_letter_found',
+          title: 'A Mysterious Letter',
+          body: '"The mountain path is no longer safe. I saw something moving between the trees after midnight..."',
+          date: new Date().toISOString().slice(0, 10),
+          kind: 'story',
+        });
+      },
+    });
+
     // clean up listeners when this scene shuts down
     // without this restarting Level0 stacks listeners forever .
     
@@ -251,27 +295,45 @@ export class Level0_SnowVillage extends Phaser.Scene {
       this.guide?.destroy();
     });
     
-    // 12. combat 
+    // 13. combat system
     const spaceBar = this.input.keyboard!.addKey('SPACE');
 
-    spaceBar.on('down',() => {
-
-      //play the attack animation
+    spaceBar.on('down', () => {
+      // 1. Play the sword swing animation
       this.player.anims.play('ninja-dark-attack-anim', true);
+
+      // dlash effect 
+      const slash = this.add.image(this.player.x, this.player.y, 'nichirin_slash');
+      slash.setDepth(10000);
+      this.tweens.add({
+        targets: slash,
+        alpha: 0,
+        scale: 2,
+        duration: 200,
+        onComplete: () => slash.destroy(),
+      });
+
     
-      //check all enemies to see i fthey are close to be hit 
+      // 2. Loop through all enemies to check distance
       for (const enemy of this.enemies) {
         const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, enemy.x, enemy.y);
         
+        // 3. If enemy is close enough (within 40 pixels), hit them!
         if (dist < 40) {
-          // push back the enemy from player
+          // Calculate knockback direction
           const angle = Phaser.Math.Angle.Between(this.player.x, this.player.y, enemy.x, enemy.y);
-          enemy.setVelocity(Math.cos(angle) * 300 , Math.sin(angle) * 300);
+          
+          // Push the enemy back in both X and Y directions
+          enemy.setVelocity(Math.cos(angle) * 300, Math.sin(angle) * 300);
 
-          //red effect
+          // Flash the enemy red to show damage
           enemy.setTint(0xff0000);
+          
+          // Deal damage (this calls the takeDamage function in Enemy.ts)
           enemy.takeDamage();
-          this.time.delayedCall(200 ,() => enemy.clearTint());
+          
+          // Clear the red tint after 200ms
+          this.time.delayedCall(200, () => enemy.clearTint());
         }
       }
     });
@@ -280,44 +342,50 @@ export class Level0_SnowVillage extends Phaser.Scene {
   update(): void {
     const speed = PLAYER_SPEED;
 
-    this.player.setVelocity(0);
+    // 1. Player movement
+    let vx = 0;
+    let vy = 0;
 
-    // else-if chain rather than separate checks. If you check X and Y
-    // independently the player moves at 1.41x speed on diagonals
-    // (sqrt(2)), which is the classic "why does my character feel
-    // faster going up-right" bug.
-    //
-    // setFlipX handles left/right because row 2 of the walk sheet is
-    // the same as row 0 (both face down). Flipping is the only way to
-    // get a distinct left/right look with these assets.
+    // 2. check WASD and arrow keys
     if (this.cursors.left.isDown || this.wasd.A.isDown) {
-      this.player.setVelocityX(-speed);
+      vx = -speed;
       this.player.setFlipX(true);
-      this.player.anims.play('ninja-dark-walk-side', true);
-    } else if (this.cursors.right.isDown || this.wasd.D.isDown) {
-      this.player.setVelocityX(speed);
-      this.player.setFlipX(false);
-      this.player.anims.play('ninja-dark-walk-side', true);
-    } else if (this.cursors.up.isDown || this.wasd.W.isDown) {
-      this.player.setVelocityY(-speed);
-      this.player.setFlipX(false);
-      this.player.anims.play('ninja-dark-walk-up', true);
-    } else if (this.cursors.down.isDown || this.wasd.S.isDown) {
-      this.player.setVelocityY(speed);
-      this.player.setFlipX(false);
-      this.player.anims.play('ninja-dark-walk-down', true);
-    } else {
-      
-      // Not moving. Freeze on frame 0 and reset flip so the idle frame
-      // isn't backwards. Not using the ninja-dark-idle-anim yet because
-      // the idle frames are subtle enough that stopping on frame 0 reads
-      // fine — will switch to the idle anim once combat is in and the
-      // player spends more time standing still.
-      this.player.anims.stop();
-      this.player.setFrame(0);
+    } 
+    if (this.cursors.right.isDown || this.wasd.D.isDown) {
+      vx = speed;
       this.player.setFlipX(false);
     }
+    if (this.cursors.up.isDown || this.wasd.W.isDown) {
+      vy = -speed;
+    }
+    if (this.cursors.down.isDown || this.wasd.S.isDown) {
+      vy = speed;
+    }
 
+    // 3.Nomalize diagonal speed
+    // if we don't do this, moving diagonally makes you move 1.4x faster
+    if (vx !== 0 && vy !== 0) {
+      vx *= 0.7071; // 1/sqrt(2)
+      vy *= 0.7071;
+    }
+
+    // 4. the velocity to player
+    this.player.setVelocity(vx, vy);
+
+    // 5. player animation 
+    if (vx !== 0) {
+      this.player.anims.play('ninja-dark-walk-side', true);
+    } else if (vy < 0) {
+      this.player.anims.play('ninja-dark-walk-up', true);
+    } else if (vy > 0) {
+      this.player.anims.play('ninja-dark-walk-down', true);
+    } else {
+      //not movindg so donot play animation 
+      this.player.anims.stop();
+      this.player.setFrame(0);
+    }
+
+    //6. depth sort 
     // Depth sort by Y position so things lower on screen draw on top.
     // Means the player walks behind trees when they're above them and
     // in front when below. Standard top-down trick.
@@ -330,7 +398,7 @@ export class Level0_SnowVillage extends Phaser.Scene {
     this.dialogue?.update();
 
 
-    // Update Enemy AI
+    // 7. Update Enemy AI
     for (const enemy of this.enemies) {
         enemy.setDepth(enemy.y + 4);
         enemy.updateAI(this.player);
@@ -662,7 +730,7 @@ this.reserve(cx, cy, rad);
 
 
   private addJapaneseHouse(x: number, y: number): void {
-    this.addProp('japanese_house', x, y, { bw: 52, bh: 24, by: 4 });
+    this.addProp('japanese_house', x, y, { bw: 52, bh: 24, by: 0 });
   }
 
   // torii gate with blockers side so you can't walk
@@ -870,7 +938,8 @@ this.reserve(cx, cy, rad);
   private createHUD(): void {
     // objective text 
     this.objectiveText = this.add
-      .text(20, 20, "Objective: Find the Elder's House (Go North)", {
+      .text(20, 20, "Objective: Find the Elder (Go South-East)", {
+
         fontSize: '20px',
         fontFamily: 'monospace',
         color: '#ffffff',

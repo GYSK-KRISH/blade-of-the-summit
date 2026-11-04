@@ -37,21 +37,21 @@ export const ELDER_SCRIPT: DialogueScript = {
         first_meet_2: {
             id: 'first_meet_2',
             speaker: 'Elder Kaen',
-            text: 'Six nights. Six nights ago, four of ours just... vanished. No blood. No tracks. Nothing. Just these weird marks in the snow, and a bell ringing somewhere past the shrine.',
+            text: 'Six nights ago, four of our people vanished into thin air. No blood. No tracks. Nothing but strange markings in the snow... and the eerie sound of a bell echoing from the old shrine.',
             next: 'first_meet_3',
         },
 
         first_meet_3: {
             id: 'first_meet_3',
             speaker: 'Elder Kaen',
-            text: 'Look, kid. I have watched this mountain take too many people. I am not losing anyone else.',
+            text: 'I have watched this mountain claim too many lives. I refuse to lose anyone else to the shadows...',
             choices: [
                 {
-                    text: 'Where do I start? I will find them.',
+                    text: 'Tell me where to start. I will bring them back.',
                     next: 'accept_quest',
                 },
                 {
-                    text: 'You talk like something is actually hunting us.',
+                    text: 'You speak as if a demon is hunting us.',
                     next: 'ask_afraid',
                 },
             ],
@@ -139,7 +139,20 @@ export const ELDER_SCRIPT: DialogueScript = {
         post_quest: {
             id: 'post_quest',
             speaker: 'Elder Kaen',
-            text: 'The truth is starting to come out. But the mountain is not done with us. Talk to the shrine caretaker. And hey — if you hear three bells tonight, do NOT look back.',
+            text: 'The truth is finally clawing its way out of the snow. But this mountain is far from done with us.\n\nSeek out the shrine caretaker. And traveler... if you hear three bells tonight, do NOT look back.',
         },
     },
+};
+
+export const LETTER_SCRIPT: DialogueScript = {
+    id: 'letter',
+    entry: () => 'read_letter',
+    nodes: {
+        read_letter: {
+            id: 'read_letter',
+            speaker: 'Mysterious Letter',
+            title: 'Parchment and Wax',
+            text: 'To whoever finds this...\n\nThe mountain path is no longer safe. I saw something moving between the trees after midnight. It had too many eyes.\n\nIf the lantern near the northern bridge is still burning, do not follow its light.\n\n— An unknown villager',
+        }
+    }
 };
