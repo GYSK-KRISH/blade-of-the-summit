@@ -192,7 +192,7 @@ export class DialogueManager {
             const targets = [n.next, n.fallback, ...(n.choices?.map(c => c.next) ?? [])].filter((t): t is string => !!t);
             for (const t of targets) {
                 if (!script.nodes[t]) {
-                    console.error(`[Dialogue] "${script.id}" node "${id}" → missing "${t}"`);
+                    console.error(`[Dialogue] "${script.id}" node "${id}"  missing "${t}"`);
                     return;
                 }
             }

@@ -51,18 +51,18 @@ export class MainMenu extends Phaser.Scene {
   }
 
   create(): void {
-    // 1. BACKGROUND (800x600 now, not 1024x768)
-    this.add.rectangle(0, 0, 800, 600, 0x0a192f).setOrigin(0);
+    // 1. BACKGROUND full screen rectangle
+    this.add.rectangle(0, 0, this.scale.width, this.scale.height, 0x0a192f).setOrigin(0);
 
     // Add the mountain horizon we generated in BootScene for free
     // (scaled up 2.5x so it fits the bottom nicely)
-    this.add.image(400, 600, 'mountain_horizon').setOrigin(0.5, 1).setScale(2.5).setAlpha(0.9);
+    this.add.image(this.scale.width / 2, this.scale.height, 'mountain_horizon').setOrigin(0.5, 1).setScale(10).setAlpha(0.9);
 
     // Drifting Mist at the bottom
     if (this.textures.exists('mist_cloud')) {
       this.add.particles(0, 500, 'mist_cloud', {
-        x: { min: 0, max: 800 },
-        y: { min: 450, max: 600 },
+        x: { min: 0, max: this.scale.width },
+        y: { min:this.scale.height - 150, max: this.scale.height},
         lifespan: 10000,
         speedX: { min: 10, max: 20 },
         alpha: { start: 0, end: 0.2, ease: 'Linear' },
@@ -84,7 +84,7 @@ export class MainMenu extends Phaser.Scene {
 
     // Snow falling over the whole screen
     this.add.particles(0, -10, 'menu-snow', {
-      x: { min: 0, max: 800 },
+      x: { min: 0, max:this.scale.width},
       y: -10,
       lifespan: 6000,
       speedY: { min: 30, max: 80 },
@@ -96,8 +96,8 @@ export class MainMenu extends Phaser.Scene {
       blendMode: 'ADD'
     });
 
-    // 2. TITLE (Centered at 400 instead of 512)
-    const title = this.add.text(400, 120, 'BLADE OF THE SUMMIT', {
+    // 2. TITLE Centered 
+    const title = this.add.text(this.scale.width / 2, 120, 'BLADE OF THE SUMMIT', {
       fontSize: '48px', // shrunk from 64 so it fits perfectly
       fontFamily: 'monospace', 
       color: '#ffffff', 
@@ -106,7 +106,7 @@ export class MainMenu extends Phaser.Scene {
     title.setShadow(0, 0, '#48cae4', 15, true, true);
 
     this.tweens.add({
-      targets: this.titleText,
+      targets: title,
       y: 110,
       duration: 2000,
       ease: 'Sine.easeInOut',
@@ -116,19 +116,19 @@ export class MainMenu extends Phaser.Scene {
 
 
     // 3. CHARACTER SELECTOR
-    this.add.text(400, 180, 'SELECT YOUR SLAYER (Scroll Wheel)', {
+    this.add.text(this.scale.width / 2, 180, 'SELECT YOUR SLAYER (Scroll Wheel)', {
       fontSize: '18px', fontFamily: 'monospace', color: '#5c677d'
     }).setOrigin(0.5);
     
     // Character Shadow
-    this.add.ellipse(400, 305, 60, 20, 0x000000, 0.4);
+    this.add.ellipse(this.scale.width / 2, 305, 60, 20, 0x000000, 0.4);
     
     // The actual sprite preview
-    this.characterPreview = this.add.sprite(400, 300, this.characters[0].texture, 0)
+    this.characterPreview = this.add.sprite(this.scale.width / 2, 300, this.characters[0].texture, 0)
       .setScale(4)
       .setOrigin(0.5, 1); // Anchor to feet
 
-    this.characterText = this.add.text(400, 340, `> ${this.characters[0].name} <`, {
+    this.characterText = this.add.text(this.scale.width / 2, 340, `> ${this.characters[0].name} <`, {
       fontSize: '28px', fontFamily: 'monospace', color: '#ffcc00', fontStyle: 'bold' }).setOrigin(0.5);
 
     // Play initial animation
@@ -151,7 +151,7 @@ export class MainMenu extends Phaser.Scene {
         text: 'CONTINUE',
         action: () => {
           console.log("no save data found bro");
-          this.flashText("NO SAVE DATA FOUND", 400);
+          this.flashText("NO SAVE DATA FOUND", this.scale.height / 2);
         }
       },
       {
@@ -164,7 +164,7 @@ export class MainMenu extends Phaser.Scene {
     this.setupInputs();
 
     // Instruction setup
-    this.add.text(400, 560, 'Press ENTER or SPACE to select', {
+    this.add.text(this.scale.width / 2, this.scale.height - 40, 'Press ENTER or SPACE to select', {
       fontSize: '14px', fontFamily: 'monospace', color: '#5c677d'
     }).setOrigin(0.5);
 
@@ -176,8 +176,8 @@ export class MainMenu extends Phaser.Scene {
     const spacing = 55;
 
     this.menuOptions.forEach((option, index) => {
-      // Changed from 512 to 400 so it's centered
-      const btn = this.add.text(400, startY + (index * spacing), option.text, {
+      // Changed from 400 to full screen so it's centered
+      const btn = this.add.text(this.scale.width / 2, startY + (index * spacing), option.text, {
         fontSize: '24px', fontFamily: 'monospace', color: '#ffffff',
         backgroundColor: '#112240', padding: { x: 20, y: 10 }
       }).setOrigin(0.5).setInteractive({ useHandCursor: true });
@@ -273,16 +273,29 @@ export class MainMenu extends Phaser.Scene {
 
 
   private flashText(message: string, yOffset: number): void {
-    // Changed to 400
-    const warning = this.add.text(400, yOffset, message, { fontSize: '18px', color: '#ff4d4d', fontFamily: 'monospace' }).setOrigin(0.5).setAlpha(0);
+    // Changed to  full screen so it's centered
+    const warning = this.add.text(this.scale.width / 2, yOffset, message, { fontSize: '18px', color: '#ff4d4d', fontFamily: 'monospace' }).setOrigin(0.5).setAlpha(0);
     this.tweens.add({ targets: warning, alpha: 1, duration: 200, yoyo: true, hold: 1000, onComplete: () => warning.destroy() });
   }
 
   private showCredits(): void {
-    // Changed 1024x768 to 800x600
-    const overlay = this.add.rectangle(400, 300, 800, 600, 0x000000, 0.8).setInteractive();
-    const creditsText = this.add.text(400, 300, "CREATED BY: YOU\n\nART: NINJA ADVENTURE PACK\nENGINE: PHASER 3\n\nPress anywhere to close",
-  { fontSize: '24px', align: 'center', color: '#48cae4', fontFamily: 'monospace' }).setOrigin(0.5);
-    overlay.on('pointerdown', () => { overlay.destroy(); creditsText.destroy(); });
+    // 1. Dark overlay covering 
+    const overlay = this.add.rectangle(this.scale.width / 2, this.scale.height / 2, this.scale.width, this.scale.height, 0x000000, 0.85 /2)
+      .setDepth(10000)
+      .setInteractive({useHandCursor: true});
+      
+    // 2. Parchment Box
+    const boxbg = this.add.rectangle(this.scale.width / 2 , this.scale.height / 2, 500,400 ,0xf2e8d5)
+      .setStrokeStyle(6, 0x4e342e )
+      .setDepth(1001);
+    
+    // 3. Credits Text
+    const creditsText = this.add.text(this.scale.width / 2, this.scale.height / 2, "CREATED BY: GYSK KRISH \n\nART: NINJA ADVENTURE PACK\nENGINE: PHASER 3\n\nPress anywhere to close",
+  { fontSize: '24px', align: 'center', color: '#2b1c13', fontFamily: 'monospace' , lineSpacing : 10 , fontStyle : 'bold'})
+      .setOrigin(0.5)
+      .setDepth(1002);
+
+    // 4. click to close 
+    overlay.on('pointerdown', () => { overlay.destroy(); boxbg.destroy(); creditsText.destroy(); });
   }
 }

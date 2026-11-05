@@ -85,6 +85,11 @@ export class GameState extends Phaser.Events.EventEmitter {
 
     // read-only view for the journal UI, debug dumps
     get raw(): Readonly<GameStateData> { return this.data; }
+    takeDamage(amount: number) {
+        this.data.health -= amount;
+        if ( this.data.health < 0) this.data.health = 0 ;
+        this.emit('changed' , {type : 'health'});
+    }
 
     //-------------------------------
     // FLAGS
@@ -127,11 +132,11 @@ export class GameState extends Phaser.Events.EventEmitter {
         const existing= q.objectives.find(o => o.id === objId);
 
         
-        // already done → nothing to do
+        // already done nothing to do
         if (existing?.done) return;
         
         
-        // exists but pending → respect the incoming `done` flag
+        // exists but pending respect the incoming `done` flag
         if (existing) {
             if (!objective.done)
                 return;
@@ -192,6 +197,6 @@ export class GameState extends Phaser.Events.EventEmitter {
         if (next) return { questId: q.id, objectiveId: next.id, description: next.description };
     }
     return null;
-     // nothing to point at → arrow hides
+     // nothing to point at arrow hides
     }
 }

@@ -1,8 +1,7 @@
 # **⚔️ Blade of the Summit ⚔️** 
 > "Throughout heaven and earth, I alone making this game."
 
-
-![alt text](image/Day9.gif)
+![GAME PREVIEW ](<image/day 18.gif>)
 
 ```text
 Inspired by demon slayer to make this 2D action adventure built with phaser 3 + typescript. 
@@ -15,7 +14,7 @@ Fight powerful enemies, master combat, climb to the summit one map at a time.
 **Built for Terra Hack Cloud — 12 Week Challenge**  
 Made by **GYSK-KRISH**
 
->Current Day: 17 / 84
+>Current Day: 18 / 84
 
 
 ---
@@ -149,10 +148,10 @@ Blade-of-the-Summit/
 ---
 
 ### Week 3
-- **Day 15** — Added Enemy AI, Player Health tracking and fixed Torii Gate Z-index (>special thanks for this suggestion about torii gate ***skavvy skavvenger*** )
-- **Day 16** — Added Intro Tutorial, [E] prompts and Enemy Health 
-- **Day 17** — Added full screen support, dialogue UI add and fixing and letter system 
-- **Day 18** — 
+- **Day 15** — Added Enemy AI, Player Health tracking and fixed Torii Gate Z-index (>special thanks for this suggestion about torii gate ***skavvy skavvenger*** ) ✅
+- **Day 16** — Added Intro Tutorial, [E] prompts and Enemy Health ✅
+- **Day 17** — Added full screen support, dialogue UI add and fixing and letter system ✅
+- **Day 18** — Fixing full screen UI scaling, health bar, responsive menu and dialogue ✅
 - **Day 19** — 
 - **Day 20** — 
 - **Day 21** — 
@@ -259,8 +258,8 @@ Blade-of-the-Summit/
 ---
 
 
-**Current Status:** Day 17 complete  
-**Next Up:** Day 18
+**Current Status:** Day 18 complete  
+**Next Up:** Day 19
 
 ---
 

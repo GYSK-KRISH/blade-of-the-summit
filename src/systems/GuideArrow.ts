@@ -31,7 +31,7 @@ export class GuideArrow {
         //1.arrow
         // small pulsing gold triangle. not too big — this isn't a
         // tutorial mobile game. just enough to notice. 🗿
-        this.arrow = scene.add.triangle(0, 0, 0, 0, 12, 6, 0, 14, 0xffe27a)
+        this.arrow = scene.add.triangle(0, 0, 0, 0, 12, 6, 0, 14, 0xff3333)
             .setScrollFactor(0)
             .setDepth(9200)
             .setAlpha(0.9)

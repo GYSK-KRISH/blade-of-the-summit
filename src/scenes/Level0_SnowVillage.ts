@@ -24,8 +24,8 @@ import { Enemy } from '../entities/Enemy';
  * details in BootScene.makeAnimations).
  * 
  * 
+ * //TODO LIST : game over and retry
  * 
- * TODO : list at 149 work on dialogue system 
  * ----------------------------------------------------------- */
 
 
@@ -85,7 +85,8 @@ export class Level0_SnowVillage extends Phaser.Scene {
   // HUD
   private objectiveText!: Phaser.GameObjects.Text;
   private locationText!: Phaser.GameObjects.Text;
-
+  private healthBarBG!: Phaser.GameObjects.Rectangle;
+  private healthBarFill!: Phaser.GameObjects.Rectangle;
 
   // class fields
   private interactions!: InteractionManager;
@@ -189,7 +190,38 @@ export class Level0_SnowVillage extends Phaser.Scene {
     this.addCollisions(red);
     this.enemies.push(red);
 
+    //player take damage from ememies
+    for (const enemy of this.enemies) {
+      this.physics.add.overlap(this.player , enemy , () => {
+      // if player already take damage  
+      if (this.player.getData('getDamage')) return;  
 
+      // Deduct health in GameState
+      this.gs.takeDamage(10);
+
+      // screen shake and red flash
+      this.cameras.main.shake(150, 0.02);
+      this.player.setTint(0xff0000);
+
+      // 
+      this.player.setData('getDamage' , true);
+      this.time.delayedCall(1000, () => {
+        this.player.clearTint();
+        this.player.setData('getDamage' , false);
+      });
+
+      // knock player back 
+      const angle = Phaser.Math.Angle.Between(enemy.x , enemy.y , this.player.x ,this.player.y);
+      this.player.setVelocity(Math.cos(angle) *300 , Math.sin(angle) * 300 );
+
+      //check death
+      if (this.gs.raw.health <= 0) {
+        this.player.setTint(0x555555) // Turn grey
+        this.player.setVelocity(0);
+        this.player.disableBody(true , false);
+      }
+    });
+  }
 
      // 6. NPCs
     this.spawnNPCs();
@@ -393,6 +425,7 @@ export class Level0_SnowVillage extends Phaser.Scene {
     this.player.setDepth(this.player.y + 4);
     for (const npc of this.npcs) npc.setDepth(npc.y + 4);
     this.updateLocationLabel();
+    this.updateObjectiveHUD();
     this.interactions?.update();
     this.guide?.update();
     this.dialogue?.update();
@@ -936,7 +969,7 @@ this.reserve(cx, cy, rad);
   //______________________________________________________ 
 
   private createHUD(): void {
-    // objective text 
+    //1. objective text 
     this.objectiveText = this.add
       .text(20, 20, "Objective: Find the Elder (Go South-East)", {
 
@@ -949,7 +982,7 @@ this.reserve(cx, cy, rad);
       .setScrollFactor(0)
       .setDepth(1000);
 
-    //
+    //2. location text
     this.locationText = this.add
       .text(20, 60, '', {
         fontSize: '16px',
@@ -960,7 +993,28 @@ this.reserve(cx, cy, rad);
       })
       .setScrollFactor(0)
       .setDepth(1000);
+
+    //3. health bar
+    this.healthBarBG = this.add.rectangle(20, 100, 200, 20, 0x000000 , 0.5)
+      .setOrigin(0,0)
+      .setScrollFactor(0)
+      .setDepth(1000);
+
+    // health bar background colour red
+    this.healthBarFill = this.add.rectangle(20, 100,200, 20, 0xb3242c)
+      .setOrigin(0,0)
+      .setScrollFactor(0)
+      .setDepth(1001);
+    
+    // listen from health change from GAmeState
+    this.gs.on('changed', (event : any ) => {
+      if (event.type === 'health') {
+        const healthPercent = Math.max(0,this.gs.raw.health / 100);
+        this.healthBarFill.width = 200 * healthPercent;
+      }
+    });
   }
+
 
   // update the location label based on player position and area definitions
   private updateLocationLabel(): void {
@@ -976,6 +1030,15 @@ this.reserve(cx, cy, rad);
       }
     }
     if (this.locationText.text !== best) this.locationText.setText(best);
+  }
+
+  private updateObjectiveHUD(): void {
+    const c = this.gs.currentObjective();
+    if (c) {
+    this.objectiveText.setText(`Objective: ${c.description}`);
+    } else{
+      this.objectiveText.setText("Explore this Village......");
+    }
   }
 
   // winter atmosphere
