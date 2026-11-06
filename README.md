@@ -2,6 +2,7 @@
 > "Throughout heaven and earth, I alone making this game."
 
 ![GAME PREVIEW ](<image/day 18.gif>)
+![alt text](image/Day19.gif)
 
 ```text
 Inspired by demon slayer to make this 2D action adventure built with phaser 3 + typescript. 
@@ -14,7 +15,7 @@ Fight powerful enemies, master combat, climb to the summit one map at a time.
 **Built for Terra Hack Cloud — 12 Week Challenge**  
 Made by **GYSK-KRISH**
 
->Current Day: 18 / 84
+>Current Day: 19 / 84
 
 
 ---
@@ -152,7 +153,7 @@ Blade-of-the-Summit/
 - **Day 16** — Added Intro Tutorial, [E] prompts and Enemy Health ✅
 - **Day 17** — Added full screen support, dialogue UI add and fixing and letter system ✅
 - **Day 18** — Fixing full screen UI scaling, health bar, responsive menu and dialogue ✅
-- **Day 19** — 
+- **Day 19** — Added game over loop, retry system and combat polish ✅
 - **Day 20** — 
 - **Day 21** — 
 
