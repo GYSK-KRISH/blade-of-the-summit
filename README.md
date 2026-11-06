@@ -258,8 +258,8 @@ Blade-of-the-Summit/
 ---
 
 
-**Current Status:** Day 18 complete  
-**Next Up:** Day 19
+**Current Status:** Day 19 complete  
+**Next Up:** Day 20 
 
 ---
 

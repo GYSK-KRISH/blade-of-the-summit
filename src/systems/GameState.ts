@@ -91,6 +91,12 @@ export class GameState extends Phaser.Events.EventEmitter {
         this.emit('changed' , {type : 'health'});
     }
 
+    // comback
+    resetHealth() {
+        this.data.health = 100;
+        this.emit('changed', { type : 'health'});
+    }
+
     //-------------------------------
     // FLAGS
     //-------------------------------

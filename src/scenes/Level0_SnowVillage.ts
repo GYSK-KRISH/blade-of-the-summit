@@ -24,8 +24,6 @@ import { Enemy } from '../entities/Enemy';
  * details in BootScene.makeAnimations).
  * 
  * 
- * //TODO LIST : game over and retry
- * 
  * ----------------------------------------------------------- */
 
 
@@ -111,11 +109,37 @@ export class Level0_SnowVillage extends Phaser.Scene {
   //enemy demon
   private enemies: Enemy[] =[];
 
+  //game over state
+  private isGameOver = false;
+  private retryGaming = false;
+
+  // reusable healthbar
+  private onHealthChange = (event: any) => {
+    if (event.type === 'health') {
+      const healthpercent  = Math.max(0 , this.gs.raw.health / 100);
+      this.healthBarFill.width = 200 * healthpercent;
+    }
+  };
+
+  // reusable 
+
   constructor() {
     super('Level0_SnowVillage');
   }
 
   create(): void {
+
+    //reset transient state 
+    this.isGameOver = false;
+    this.retryGaming = false;
+    this.enemies =[];
+    this.npcs =[];
+    this.solids = [];
+    this.grid = [];
+    this.bridges = [];
+    this.chimneys =[];
+    this.riverMask = [];
+    this.reserved = new Set();
     this.gs = GameState.fromRegistry(this);
   
     //1.bounds
@@ -193,8 +217,9 @@ export class Level0_SnowVillage extends Phaser.Scene {
     //player take damage from ememies
     for (const enemy of this.enemies) {
       this.physics.add.overlap(this.player , enemy , () => {
-      // if player already take damage  
-      if (this.player.getData('getDamage')) return;  
+        if (this.isGameOver) return;
+        // if player already take damage  
+        if (this.player.getData('getDamage')) return;  
 
       // Deduct health in GameState
       this.gs.takeDamage(10);
@@ -209,6 +234,7 @@ export class Level0_SnowVillage extends Phaser.Scene {
         this.player.clearTint();
         this.player.setData('getDamage' , false);
       });
+    
 
       // knock player back 
       const angle = Phaser.Math.Angle.Between(enemy.x , enemy.y , this.player.x ,this.player.y);
@@ -216,13 +242,11 @@ export class Level0_SnowVillage extends Phaser.Scene {
 
       //check death
       if (this.gs.raw.health <= 0) {
-        this.player.setTint(0x555555) // Turn grey
-        this.player.setVelocity(0);
-        this.player.disableBody(true , false);
+        this.showGameOver(); 
+        return;
       }
     });
-  }
-
+  }  
      // 6. NPCs
     this.spawnNPCs();
 
@@ -256,7 +280,7 @@ export class Level0_SnowVillage extends Phaser.Scene {
     this.interactions = new InteractionManager(
         this,
         () => this.player,
-        () => this.dialogue?.isOpen() ?? false, 
+        () => this.isGameOver || (this.dialogue?.isOpen() ?? false), 
 
     );
     this.guide = new GuideArrow(this, this.gs, () => this.player);
@@ -320,8 +344,11 @@ export class Level0_SnowVillage extends Phaser.Scene {
     // without this restarting Level0 stacks listeners forever .
     
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      this.isGameOver = false;
+      this.retryGaming = false;
       this.events.off('dialogue-opened');
       this.events.off('dialogue-closed');
+      this.gs?.off('changed', this.onHealthChange);
       this.interactions.destroy();
       this.dialogue?.destroy();
       this.guide?.destroy();
@@ -331,6 +358,8 @@ export class Level0_SnowVillage extends Phaser.Scene {
     const spaceBar = this.input.keyboard!.addKey('SPACE');
 
     spaceBar.on('down', () => {
+      if( this.isGameOver) return;
+
       // 1. Play the sword swing animation
       this.player.anims.play('ninja-dark-attack-anim', true);
 
@@ -347,11 +376,22 @@ export class Level0_SnowVillage extends Phaser.Scene {
 
     
       // 2. Loop through all enemies to check distance
+      let hitSomething = false;
       for (const enemy of this.enemies) {
+        //skip if enemy is dead 
+        if (!enemy.active) continue;
+
         const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, enemy.x, enemy.y);
         
         // 3. If enemy is close enough (within 40 pixels), hit them!
         if (dist < 40) {
+          hitSomething = true;
+
+          //capture position of enemy
+          const ex = enemy.x;
+          const ey = enemy.y;
+        
+
           // Calculate knockback direction
           const angle = Phaser.Math.Angle.Between(this.player.x, this.player.y, enemy.x, enemy.y);
           
@@ -364,14 +404,41 @@ export class Level0_SnowVillage extends Phaser.Scene {
           // Deal damage (this calls the takeDamage function in Enemy.ts)
           enemy.takeDamage();
           
+
+          // hit aninmation
+          const hitAnim = this.add.sprite(ex, ey, 'hit_spark').setDepth(10000);
+          this.tweens.add({
+            targets: hitAnim,
+            alpha: 0,
+            scale : 2,
+            duration: 200,
+            ease: 'Power1',
+            onComplete: () => hitAnim.destroy(),
+          });
+
           // Clear the red tint after 200ms
-          this.time.delayedCall(200, () => enemy.clearTint());
+          this.time.delayedCall(200, () => {
+            if (enemy.active) {
+              enemy.clearTint();
+            }
+          });
         }
       }
+        // impact 
+        if (hitSomething){
+            this.cameras.main.shake(50 , 0.01);
+        }
     });
   }
 
+
   update(): void {
+    if (this.isGameOver) return;
+    
+    if (this.gs.raw.health <= 0) {
+      this.showGameOver(); 
+      return;
+    }
     const speed = PLAYER_SPEED;
 
     // 1. Player movement
@@ -433,6 +500,7 @@ export class Level0_SnowVillage extends Phaser.Scene {
 
     // 7. Update Enemy AI
     for (const enemy of this.enemies) {
+      if (!enemy.active || !enemy.body) continue;
         enemy.setDepth(enemy.y + 4);
         enemy.updateAI(this.player);
     }
@@ -1007,14 +1075,115 @@ this.reserve(cx, cy, rad);
       .setDepth(1001);
     
     // listen from health change from GAmeState
-    this.gs.on('changed', (event : any ) => {
-      if (event.type === 'health') {
-        const healthPercent = Math.max(0,this.gs.raw.health / 100);
-        this.healthBarFill.width = 200 * healthPercent;
-      }
-    });
+    this.gs.on('changed', this.onHealthChange);
   }
 
+  //______________________________________________________
+  //  GAME OVER
+  //______________________________________________________
+
+  private showGameOver(): void {
+    if(this.isGameOver) return;
+    this.isGameOver = true;
+
+    // freeze the game
+    this.player.setTint(0x555555);
+    this.player.setVelocity(0, 0);
+    this.player.disableBody(true, false);
+
+    //freeze enemies
+    for (const enemy of this.enemies) {
+      if(!enemy.active || !enemy.body) continue;
+      enemy.setVelocity(0);
+      enemy.anims.stop();
+    }
+
+    // hide helpers
+    this.guide?.setHidden(true);
+    this.guide?.update();
+    this.interactions?.hidePrompt();
+
+    // camera 
+    const zoom = this.cameras.main.zoom;
+    const w = this.cameras.main.width;
+    const h = this.cameras.main.height;
+    const cx =  w/2;
+    const cy = h /2 ;
+    const k = 1 / zoom;
+
+    // 1. dark overlay
+      const overlay = this.add
+      .rectangle(cx, cy, w * k, h * k, 0x000000, 0.8)
+      .setScrollFactor(0)
+      .setDepth(30000)
+      .setInteractive({ useHandCursor: true });
+
+
+
+
+    // 2. died text
+    const diesText = this.add
+      .text(cx, cy - 40 * k, 'YOU DIED', {
+        fontFamily: 'monospace',
+        fontSize: `${Math.round(64 * k)}px`,
+        color : '#8b0000',
+        fontStyle:'bold',
+      })
+    .setOrigin(0.5)
+    .setScrollFactor(0)
+    .setDepth(30001);
+
+    diesText.setShadow(0,0, '#ff2222', 20 , true , true);
+
+    // glow
+    this.tweens.add({
+      targets: diesText,
+      scale: 1.05,
+      duration : 1200,
+      ease: 'Sine.easeInOut',
+      yoyo:true,
+      repeat: -1,
+    });
+
+    // 3. retry buttom
+    const retryText = this.add.text(cx, cy + 60 * k, 'click to retry' ,{
+      fontFamily: 'monospace',
+      fontSize: `${Math.round(24 * k)}px`,
+      color: '#89ce0a',
+      backgroundColor :"#162847",
+      padding: {x:20 * k   , y :10 * k},
+    } )
+    .setOrigin(0.5)
+    .setScrollFactor(0)
+    .setDepth(30001)
+    .setInteractive({useHandCursor : true });
+
+    retryText.on('pointerover', () => 
+      retryText.setStyle({color : '#48cae4' , backgroundColor : '#1a3a5c'}),
+    );
+    retryText.on('pointerout', () =>
+      retryText.setStyle({ color: '#ffffff' ,backgroundColor : '#0e1f3b'}),
+    );
+
+    // 4. avoid double retry
+    const doRetry = () => this.retryGame();
+    retryText.on('pointerdown', doRetry);
+    overlay.on('pointerdown', doRetry);
+    this.input.keyboard!.once('keydown-SPACE', doRetry);
+    this.input.keyboard!.once('keydown-ENTER', doRetry);
+    this.input.keyboard!.once('keydown-E', doRetry);
+  } 
+
+  private retryGame(): void {
+    if (this.retryGaming) return;
+    this.retryGaming = true;
+    this.gs.resetHealth();
+    this.cameras.main.fadeOut(400, 0, 0, 0);
+    this.cameras.main.once(
+      Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE,
+      () => this.scene.restart(),
+    );
+  }
 
   // update the location label based on player position and area definitions
   private updateLocationLabel(): void {
