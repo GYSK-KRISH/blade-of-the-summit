@@ -181,15 +181,16 @@ export class Level0_SnowVillage extends Phaser.Scene {
     this.player.setCollideWorldBounds(true);
     //gojo intro text 
     const introText = this.add.text(
-      this.cameras.main.width / 2 / this.cameras.main.zoom ,
-      this.cameras.main.height / 2 / this.cameras.main.zoom,
-      "Welcome to the Snow Village! !\n\n Your journey begins here.!\n\n Go talk to Elder in (SOUTH-EAST direction)!\n\nMove: W, A, S, D\nInteract: E ", { 
+      this.cameras.main.width / 2 ,
+      this.cameras.main.height / 2 ,
+      "Welcome to the Snow Village! !\n\n Your journey begins here.!\n\n Go talk to Elder in  (GO UP TWO STEPS THEN GO LEFT) direction)!\n\nMove: W, A, S, D\nInteract: E ", { 
         fontSize: '20px',
         fontFamily: 'monospace',
         color: '#020202',
         backgroundColor: '#b8d60dda',
         align: 'center',
         padding: { x: 20, y: 20 },
+        wordWrap: { width: 200},
       }
     ).setOrigin(0.5)
     .setScrollFactor(0)
@@ -225,12 +226,12 @@ export class Level0_SnowVillage extends Phaser.Scene {
       this.gs.takeDamage(10);
 
       // screen shake and red flash
-      this.cameras.main.shake(150, 0.02);
+      this.cameras.main.shake(40, 0.01);
       this.player.setTint(0xff0000);
 
       // 
       this.player.setData('getDamage' , true);
-      this.time.delayedCall(1000, () => {
+      this.time.delayedCall(850, () => {
         this.player.clearTint();
         this.player.setData('getDamage' , false);
       });
@@ -839,7 +840,8 @@ this.reserve(cx, cy, rad);
     const a = x * TILE_SIZE;
     const b = y * TILE_SIZE;
     const gate = this.add.image(a, b, 'torii_gate').setScale(scale);
-    gate.setDepth(b);
+    const gatebottom = b + (gate.displayHeight / 2);
+    gate.setDepth(gatebottom); 
     for (const side of [-1, 1]) {
       this.addBlocker(
         a + side * 12 * scale,
@@ -1082,7 +1084,7 @@ this.reserve(cx, cy, rad);
   //  GAME OVER
   //______________________________________________________
 
-  private showGameOver(): void {
+    private showGameOver(): void {
     if(this.isGameOver) return;
     this.isGameOver = true;
 
@@ -1116,10 +1118,7 @@ this.reserve(cx, cy, rad);
       .rectangle(cx, cy, w * k, h * k, 0x000000, 0.8)
       .setScrollFactor(0)
       .setDepth(30000)
-      .setInteractive({ useHandCursor: true });
-
-
-
+      .setInteractive({ useHandCursor: true })
 
     // 2. died text
     const diesText = this.add
@@ -1210,7 +1209,7 @@ this.reserve(cx, cy, rad);
     }
   }
 
-  // winter atmosphere
+  // winter atmosphereintroText 
   private createAtmosphere(): void {
     // 1.falling snow
     this.add

@@ -47,7 +47,7 @@ export class InteractionManager {
             fontSize: '10px',
             color: '#fff7e0',
             backgroundColor: '#000000cc',
-            padding: { x: 5, y: 2 },
+            padding: { x: 10, y: 5 },
         })
             .setDepth(9500)      
             .setOrigin(0.5, 1)

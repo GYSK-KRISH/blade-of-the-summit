@@ -15,7 +15,7 @@ Fight powerful enemies, master combat, climb to the summit one map at a time.
 **Built for Terra Hack Cloud — 12 Week Challenge**  
 Made by **GYSK-KRISH**
 
->Current Day: 19 / 84
+>Current Day: 20 / 84
 
 
 ---
@@ -154,7 +154,7 @@ Blade-of-the-Summit/
 - **Day 17** — Added full screen support, dialogue UI add and fixing and letter system ✅
 - **Day 18** — Fixing full screen UI scaling, health bar, responsive menu and dialogue ✅
 - **Day 19** — Added game over loop, retry system and combat polish ✅
-- **Day 20** — 
+- **Day 20** — Fixing problem Y-sort gates, HUD clipping, combat feel (>special thanks for this suggestion  ***skavvy skavvenger***) ✅
 - **Day 21** — 
 
 ---
@@ -259,8 +259,8 @@ Blade-of-the-Summit/
 ---
 
 
-**Current Status:** Day 19 complete  
-**Next Up:** Day 20 
+**Current Status:** Day 20 complete  
+**Next Up:** Day 21 
 
 ---
 

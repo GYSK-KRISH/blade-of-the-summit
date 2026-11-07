@@ -9,7 +9,8 @@ import type { GameState } from './GameState';
  * off-screen -> clamps to screen edge + shows distance.
  * no objective -> arrow hides. no clutter.
  * 
- * 
+ * TODO list : Guide arrow not showing in start screen
+ *  only shows when you have a quest.
  * ---------------------------------------------------------- */
 
 
@@ -30,7 +31,8 @@ export class GuideArrow {
     ) {
         //1.arrow
         // small pulsing gold triangle. not too big — this isn't a
-        // tutorial mobile game. just enough to notice. 🗿
+        // tutorial mobile game. just enough to notice. 🗿  
+        // AI helped line 
         this.arrow = scene.add.triangle(0, 0, 0, 0, 12, 6, 0, 14, 0xff3333)
             .setScrollFactor(0)
             .setDepth(9200)
@@ -110,7 +112,8 @@ export class GuideArrow {
 
         //5.world screen-space
         // multiply by zoom because scrollFactor(0) still gets zoomed.
-        // forget this arrow is 3px tall on your first playtest 💀
+        // forget this arrow is 3px tall on your first playtest 💀 
+        // ai line
         const kx = (ax - cam.scrollX) * zoom;
         const ky = (ay - cam.scrollY) * zoom;
         this.arrow

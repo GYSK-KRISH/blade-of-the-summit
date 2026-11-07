@@ -1,6 +1,11 @@
 import type { DialogueScript } from './DialogueManager';
 import { QUEST_MAIN_1 } from './questions';
 
+
+ // this story line generated with AI 
+
+
+
 export const ELDER_SCRIPT: DialogueScript = {
     id: 'elder',
 
